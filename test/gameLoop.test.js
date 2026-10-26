@@ -209,6 +209,71 @@ test('nextTurn runs the full loop: upkeep -> event -> decision -> save', async (
     );
 });
 
+test('dismissing the event modal clears busy and keeps the game playable', async () => {
+    clearSave();
+    const event = makeEvent();
+    // A UI that simulates the player dismissing the modal (backdrop click):
+    // it invokes onDismiss instead of onChoose. If the controller did not
+    // resolve the decision on dismissal, `busy` would latch forever and the
+    // next turn would be blocked — this test fails if the latch is reintroduced.
+    const calls = { event: 0, closed: 0, toast: [], update: 0 };
+    const ui = {
+        async mount() {},
+        update() {
+            calls.update += 1;
+        },
+        renderMap() {},
+        renderDashboard() {},
+        showNationPicker() {},
+        showEventModal(_event, _onChoose, onDismiss) {
+            calls.event += 1;
+            // Player clicks the backdrop: dismiss without choosing an option.
+            if (typeof onDismiss === 'function') onDismiss();
+        },
+        showEventLoading() {},
+        showEventError() {},
+        closeModal() {
+            calls.closed += 1;
+        },
+        toast(msg) {
+            calls.toast.push(String(msg));
+        },
+    };
+    const controller = createGameController({
+        engine: createEngine(),
+        scenario: makeScenario(),
+        llm: makeFakeLlm(event),
+        ui,
+    });
+    await controller.pickNation('BRA');
+    const before = controller.getState();
+
+    await controller.nextTurn(); // dismissed, must NOT hang
+
+    assert.equal(controller.isBusy(), false, 'controller must not stay busy after a dismissal');
+    assert.equal(calls.event, 1, 'event modal was shown once');
+
+    const afterDismiss = controller.getState();
+    // The advanced (upkeep-applied) turn is kept so progress is not lost; the
+    // skipped decision simply applies no event effects.
+    assert.equal(afterDismiss.turn, before.turn + 1, 'the advanced turn is preserved on dismissal');
+    const ctx = getContext();
+    assert.ok(ctx.chatMetadata.hoiGrandeEstrategia, 'the advanced turn is persisted');
+    assert.ok(
+        !afterDismiss.log.some((l) => l.kind === 'decision'),
+        'no decision is logged when the event is dismissed',
+    );
+
+    // A subsequent turn must run normally (the controller recovered).
+    ui.showEventModal = (ev, onChoose) => {
+        calls.event += 1;
+        onChoose(ev.options[0].id);
+    };
+    await controller.nextTurn();
+    assert.equal(controller.isBusy(), false, 'controller is free after recovery');
+    assert.equal(controller.getState().turn, before.turn + 2, 'a later turn advances normally');
+});
+
 test('nextTurn without a campaign toasts the no-campaign message', async () => {
     clearSave();
     const ui = makeFakeUi();

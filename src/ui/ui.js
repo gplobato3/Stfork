@@ -53,7 +53,7 @@ export function createUi(handlers = {}) {
         onSelectNation: handlers.onSelectNation,
     });
 
-    const state = { world: null, modalHost: null, mounted: false };
+    const state = { world: null, modalHost: null, mounted: false, onDismiss: null };
 
     /** Lazily create the modal host (overlay) attached to the panel root or body. */
     function ensureModalHost() {
@@ -65,6 +65,9 @@ export function createUi(handlers = {}) {
         const backdrop = el(doc, 'div', { className: 'hoi-modal__backdrop' });
         const body = el(doc, 'div', { className: 'hoi-modal__body' });
         host.append(backdrop, body);
+        // A backdrop click dismisses the modal. closeModal() fires the pending
+        // dismiss handler (if any) so flows awaiting a decision are never left
+        // hanging when the player clicks outside instead of choosing.
         backdrop.addEventListener('click', () => closeModal());
         (doc.body || doc.documentElement).appendChild(host);
         state.modalHost = host;
@@ -76,11 +79,26 @@ export function createUi(handlers = {}) {
         if (host) host.setAttribute('aria-hidden', 'false');
         return host;
     }
+    /**
+     * Hide the modal host and clear its body. If a dismiss handler was armed by
+     * the flow that opened the modal (e.g. the event decision), invoke it once
+     * so dismissal maps onto a decision instead of silently stranding an
+     * awaiting promise.
+     */
     function closeModal() {
+        const dismiss = state.onDismiss;
+        state.onDismiss = null;
         if (state.modalHost) {
             state.modalHost.setAttribute('aria-hidden', 'true');
             const body = state.modalHost.querySelector('.hoi-modal__body');
             if (body) body.textContent = '';
+        }
+        if (typeof dismiss === 'function') {
+            try {
+                dismiss();
+            } catch {
+                /* ignore */
+            }
         }
     }
     function modalBody() {
@@ -122,13 +140,29 @@ export function createUi(handlers = {}) {
         }
     }
 
-    function showEventModalApi(event, onChoose) {
+    function showEventModalApi(event, onChoose, onDismiss) {
         const body = modalBody();
-        if (!body) return;
+        if (!body) {
+            // No DOM host available: treat as an immediate dismiss so a caller
+            // awaiting a decision is never left hanging.
+            if (typeof onDismiss === 'function') onDismiss();
+            return;
+        }
+        let settled = false;
         const choose = (optionId) => {
+            if (settled) return;
+            settled = true;
+            state.onDismiss = null; // a real choice supersedes any dismiss.
             closeModal();
             if (typeof onChoose === 'function') onChoose(optionId);
             else if (typeof handlers.onChooseOption === 'function') handlers.onChooseOption(optionId);
+        };
+        // Arm the dismiss handler so a backdrop click (closeModal) resolves the
+        // decision as a cancel instead of stranding the controller.
+        state.onDismiss = () => {
+            if (settled) return;
+            settled = true;
+            if (typeof onDismiss === 'function') onDismiss();
         };
         void showEventModal(body, event, choose);
     }

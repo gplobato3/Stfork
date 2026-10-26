@@ -253,8 +253,29 @@ export function createGameController(deps) {
             showEventLoading();
             const event = await llm.generateTurnEvent(advanced, { toast: (m) => toast(m) });
 
-            // 4. Present the decision and wait for the player's choice.
+            // 4. Present the decision and wait for the player's choice. A null
+            //    result means the player dismissed the modal without choosing.
             const optionId = await presentEvent(event);
+
+            if (optionId == null) {
+                // 4a. Player dismissed the event without deciding. Keep the
+                //     already-advanced (upkeep-applied) turn so progress is not
+                //     lost, persist it, and leave the loop playable. No event
+                //     effects or narration are applied for a skipped decision.
+                world = advanced;
+                await safeSave();
+                refreshUi();
+                toast(
+                    t('hoi_toast_turn_advanced', {
+                        turn: world.turn,
+                        month: world.date.month,
+                        year: world.date.year,
+                    }),
+                );
+                const overSkipped = engine.checkGameOver(world);
+                if (overSkipped) surfaceGameOver(overSkipped);
+                return;
+            }
 
             // 5. Apply the chosen option to the advanced state.
             const resolved = engine.applyEvent(advanced, event, optionId);
@@ -287,27 +308,34 @@ export function createGameController(deps) {
     }
 
     /**
-     * Show the event modal and resolve with the chosen option id. If the player
-     * dismisses without choosing, this never resolves on its own; the modal's
-     * own choose callback drives resolution. A safety fallback picks the first
-     * option if the UI cannot present the modal at all.
+     * Show the event modal and resolve with the chosen option id, or with
+     * `null` when the player dismisses the modal without choosing (e.g. a
+     * backdrop click). Resolving on dismissal guarantees the awaiting turn
+     * never hangs, so `busy` always clears and the controller cannot latch.
+     * A safety fallback picks the first option if the UI cannot present the
+     * modal at all (a synchronous throw from showEventModal).
      * @param {import('../contract/events.js').GameEvent} event
-     * @returns {Promise<string>}
+     * @returns {Promise<string|null>}
      */
     function presentEvent(event) {
         return new Promise((resolve) => {
             const options = (event && Array.isArray(event.options) && event.options) || [];
-            const fallbackId = options[0] && options[0].id;
+            const fallbackId = (options[0] && options[0].id) || null;
+            let settled = false;
+            const settle = (value) => {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+            };
             try {
-                let settled = false;
-                ui.showEventModal(event, (optionId) => {
-                    if (settled) return;
-                    settled = true;
-                    resolve(optionId || fallbackId);
-                });
+                ui.showEventModal(
+                    event,
+                    (optionId) => settle(optionId || fallbackId),
+                    () => settle(null),
+                );
             } catch (e) {
                 log('warn', 'showEventModal failed, auto-choosing first option:', e);
-                resolve(fallbackId);
+                settle(fallbackId);
             }
         });
     }
