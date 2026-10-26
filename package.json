@@ -1,6 +1,6 @@
 {
     "name": "st-hoi-grande-estrategia",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Hearts of Iron-style grand-strategy game as a SillyTavern third-party UI extension (modern-day / near-future WW3). Dev tooling only; the shipped extension has no runtime npm dependencies.",
     "type": "module",
     "private": true,
@@ -12,6 +12,19 @@
     },
     "scripts": {
         "check": "node tools/check.mjs",
-        "test": "node --test"
+        "test": "node --test \"test/*/*.test.js\"",
+        "build:map": "node tools/build-map.mjs",
+        "build:flags": "node tools/build-flags.mjs",
+        "build:art": "node tools/gen-art.mjs",
+        "test:scenario": "node --test \"test/scenario/*.test.js\""
+    },
+    "devDependencies": {
+        "d3-geo": "^3.1.1",
+        "flag-icons": "^7.6.0",
+        "polylabel": "^2.1.0",
+        "svgo": "^4.1.0",
+        "topojson-client": "^3.1.0",
+        "topojson-server": "^3.0.1",
+        "topojson-simplify": "^3.0.3"
     }
 }

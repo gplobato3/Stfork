@@ -1,0 +1,17 @@
+{
+    "width": 1000,
+    "height": 520,
+    "projection": "naturalEarth1",
+    "graticule": "M0 260H1000M500 0V520",
+    "outline": "M0 0H1000V520H0Z",
+    "countries": {
+        "AAA": { "id": "AAA", "d": "M100 100H300V300H100Z", "label": [200, 200], "capital": [180, 190], "area": 40000, "bbox": [100, 100, 300, 300], "neighbors": ["BBB", "CCC"] },
+        "BBB": { "id": "BBB", "d": "M300 100H500V300H300Z", "label": [400, 200], "capital": [420, 210], "area": 40000, "bbox": [300, 100, 500, 300], "neighbors": ["AAA", "CCC", "DDD", "EEE"] },
+        "CCC": { "id": "CCC", "d": "M100 300H300V400H100Z", "label": [200, 350], "capital": [200, 350], "area": 20000, "bbox": [100, 300, 300, 400], "neighbors": ["AAA", "BBB"] },
+        "DDD": { "id": "DDD", "d": "M500 100H540V140H500Z", "label": [520, 120], "capital": [520, 120], "area": 1600, "bbox": [500, 100, 540, 140], "neighbors": ["BBB"] },
+        "EEE": { "id": "EEE", "d": "M300 300H340V320H300Z", "label": [320, 310], "capital": [320, 310], "area": 800, "bbox": [300, 300, 340, 320], "neighbors": ["BBB"] },
+        "FFF": { "id": "FFF", "d": "M700 100H800V200H700Z", "label": [750, 150], "capital": [750, 150], "area": 10000, "bbox": [700, 100, 800, 200], "neighbors": ["GGG"] },
+        "GGG": { "id": "GGG", "d": "M800 100H900V200H800Z", "label": [850, 150], "capital": [850, 150], "area": 10000, "bbox": [800, 100, 900, 200], "neighbors": ["FFF"] },
+        "HHH": { "id": "HHH", "d": "M700 300H704V304H700Z", "label": [702, 302], "capital": [702, 302], "area": 16, "bbox": [700, 300, 704, 304], "neighbors": [] }
+    }
+}

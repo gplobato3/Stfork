@@ -1,0 +1,248 @@
+/*
+ * css/hud.css — UI-B: campaign bar docked at the top of #sheld (the chat
+ * column). It is a normal flex item placed before #chat, so ST's own
+ * #top-bar stays untouched and the chat shrinks by the bar's height.
+ * Width adapts with a container query (the column is 50vw by default).
+ */
+
+.hoi-root.hoi-hud {
+    position: relative;
+    z-index: 31; /* above #chat (z-index 30) inside #sheld's stacking context */
+    flex: 0 0 auto;
+    width: 100%;
+    container-type: inline-size;
+    container-name: hoihud;
+    font-size: 12px;
+    line-height: 1.2;
+}
+.hoi-root.hoi-hud[hidden] { display: none !important; }
+.hoi-root.hoi-hud.hoi-hud--floating {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(960px, 100vw);
+    z-index: var(--hoi-z-hud);
+}
+
+/* Chip modes: the strip continues the chat column's own tint so no gap shows. */
+.hoi-root .hoi-hud__strip {
+    background-color: var(--SmartThemeChatTintColor, transparent);
+    -webkit-backdrop-filter: blur(var(--SmartThemeBlurStrength, 0px));
+    backdrop-filter: blur(var(--SmartThemeBlurStrength, 0px));
+}
+
+/* MovingUI shows #sheldheader (drag grip) in the top-right corner of #sheld
+   (public/css/toggle-dependent.css:445); keep our collapse button clear of it. */
+body.movingUI .hoi-root.hoi-hud .hoi-hud__bar { padding-right: 30px; }
+
+/* ------------------------------------------------------------------- bar */
+.hoi-root .hoi-hud__bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 5px 7px 5px 6px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 55%),
+        linear-gradient(180deg, #20282c, #12171a);
+    border: 1px solid #050607;
+    border-top: 0;
+    border-bottom-color: var(--hoi-brass-2);
+    border-radius: 0 0 7px 7px;
+    box-shadow:
+        inset 0 -1px 0 rgba(201, 162, 39, 0.22),
+        0 4px 16px rgba(0, 0, 0, 0.5);
+    animation: hoi-fade-in 0.2s ease-out both;
+}
+
+.hoi-root .hoi-hud__nation {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 0 1 auto; /* the only shrinkable item: its name ellipsizes */
+    padding: 2px 8px 2px 3px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--hoi-ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.hoi-root .hoi-hud__nation:hover { background: rgba(255, 255, 255, 0.05); border-color: var(--hoi-line-2); }
+.hoi-root .hoi-hud__nation:focus-visible { outline: 2px solid var(--hoi-brass); outline-offset: 1px; }
+.hoi-root .hoi-hud__nation .hoi-flag { width: 30px; height: 22px; }
+.hoi-root .hoi-hud__nation-text { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.hoi-root .hoi-hud__nation-name {
+    font: 700 12.5px/1.1 var(--hoi-font-display);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--hoi-brass);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.hoi-root .hoi-hud__leader { font-size: 10.5px; color: var(--hoi-ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hoi-root .hoi-hud__war { color: var(--hoi-red); font-size: 12px; animation: hoi-pulse 2.4s ease-in-out infinite; }
+
+.hoi-root .hoi-hud__stats {
+    display: flex;
+    align-items: center;
+    flex: none;
+    gap: 10px;
+    padding-left: 10px;
+    border-left: 1px solid var(--hoi-line);
+}
+.hoi-root .hoi-hud__stat { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.hoi-root .hoi-hud__stat-icon { color: var(--hoi-ink-faint); font-size: 11px; }
+.hoi-root .hoi-hud__date { color: var(--hoi-ink); font-weight: 600; }
+.hoi-root .hoi-hud__date-short { display: none; }
+
+.hoi-root .hoi-hud__defcon {
+    --hoi-defcon: var(--hoi-amber);
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--hoi-defcon);
+    border-radius: 3px;
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--hoi-defcon) 25%, transparent);
+}
+.hoi-root .hoi-hud__defcon-k {
+    padding: 3px 5px;
+    font: 700 9.5px/1.25 var(--hoi-font-ui);
+    letter-spacing: 0.1em;
+    color: color-mix(in srgb, var(--hoi-defcon) 70%, #fff);
+    background: rgba(0, 0, 0, 0.4);
+}
+.hoi-root .hoi-hud__defcon-n { padding: 3px 7px; font: 800 12px/1 var(--hoi-font-ui); display: grid; place-items: center; background: var(--hoi-defcon); color: #121212; }
+
+.hoi-root .hoi-hud__pc-n { font: 700 14px/1 var(--hoi-font-display); color: var(--hoi-brass); }
+.hoi-root .hoi-hud__pc-k { font-size: 9.5px; letter-spacing: 0.1em; color: var(--hoi-ink-faint); font-weight: 700; }
+.hoi-root .hoi-hud__pc .hoi-hud__stat-icon { color: var(--hoi-brass-2); }
+
+.hoi-root .hoi-hud__tension { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.hoi-root .hoi-hud__tension-k { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hoi-ink-faint); font-weight: 700; }
+.hoi-root .hoi-hud__tension-bar { width: 64px; height: 6px; display: block; }
+.hoi-root .hoi-hud__tension-bar > .hoi-bar__fill { display: block; }
+.hoi-root .hoi-hud__tension-n { font-size: 11px; color: var(--hoi-ink-dim); font-weight: 700; min-width: 16px; }
+
+.hoi-root .hoi-hud__pending {
+    appearance: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    padding: 4px 6px 4px 8px;
+    border: 1px solid var(--hoi-red);
+    border-radius: 4px;
+    background: linear-gradient(180deg, rgba(196, 71, 58, 0.28), rgba(143, 42, 33, 0.22));
+    color: #f6c2ba;
+    font: 700 10.5px/1 var(--hoi-font-ui);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    animation: hoi-hud-ring 2s ease-out infinite;
+}
+.hoi-root .hoi-hud__pending:hover { background: linear-gradient(180deg, rgba(196, 71, 58, 0.45), rgba(143, 42, 33, 0.35)); color: #fff; }
+.hoi-root .hoi-hud__pending:focus-visible { outline: 2px solid var(--hoi-brass); outline-offset: 1px; }
+.hoi-root .hoi-hud__badge { animation: hoi-pulse 1.6s ease-in-out infinite; }
+@keyframes hoi-hud-ring {
+    0% { box-shadow: 0 0 0 0 rgba(196, 71, 58, 0.55); }
+    70% { box-shadow: 0 0 0 7px rgba(196, 71, 58, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(196, 71, 58, 0); }
+}
+
+.hoi-root .hoi-hud__actions { display: flex; align-items: center; gap: 6px; margin-left: auto; flex: none; }
+.hoi-root .hoi-hud__btn { min-height: 28px; padding: 4px 10px; font-size: 11.5px; white-space: nowrap; }
+.hoi-root .hoi-hud__end { min-width: 0; }
+.hoi-root .hoi-hud__end-short { display: none; }
+.hoi-root .hoi-hud__nation { min-width: 38px; }
+.hoi-root .hoi-hud__spinner { width: 13px; height: 13px; border-width: 2px; border-color: rgba(23, 17, 4, 0.35); border-top-color: #171104; }
+.hoi-root .hoi-hud__bar.is-busy .hoi-hud__end:disabled { opacity: 0.8; }
+.hoi-root .hoi-hud__collapse { min-width: 26px; min-height: 26px; padding: 3px; color: var(--hoi-ink-faint); }
+.hoi-root .hoi-hud__over { gap: 6px; }
+.hoi-root .hoi-hud__over--victory { border-color: var(--hoi-brass-2); color: var(--hoi-brass); }
+.hoi-root .hoi-hud__over--defeat { border-color: var(--hoi-red-2); color: #f0958a; }
+
+/* --------------------------------------------------- strip (chip modes) */
+.hoi-root .hoi-hud__strip { display: flex; justify-content: center; padding: 0 0 3px; }
+.hoi-root .hoi-hud__chip {
+    --hoi-defcon: var(--hoi-amber);
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    max-width: 100%;
+    height: 26px;
+    padding: 0 10px 0 6px;
+    border: 1px solid #050607;
+    border-top: 0;
+    border-bottom-color: var(--hoi-brass-2);
+    border-radius: 0 0 8px 8px;
+    background: linear-gradient(180deg, #20282c, #12171a);
+    color: var(--hoi-ink);
+    font: 600 11.5px/1 var(--hoi-font-ui);
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.hoi-root .hoi-hud__chip:hover { border-bottom-color: var(--hoi-brass); box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--hoi-brass-glow); }
+.hoi-root .hoi-hud__chip:focus-visible { outline: 2px solid var(--hoi-brass); outline-offset: 1px; }
+.hoi-root .hoi-hud__chip-text { overflow: hidden; text-overflow: ellipsis; }
+.hoi-root .hoi-hud__chip-sep { width: 1px; height: 12px; background: var(--hoi-line-2); }
+.hoi-root .hoi-hud__chip-defcon { color: var(--hoi-defcon); font-weight: 800; }
+.hoi-root .hoi-hud__chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hoi-red); box-shadow: 0 0 6px var(--hoi-red); animation: hoi-pulse 1.4s ease-in-out infinite; }
+.hoi-root .hoi-hud__chip-caret { font-size: 9px; color: var(--hoi-ink-faint); }
+.hoi-root .hoi-hud__chip--start { padding: 0 12px 0 10px; gap: 8px; }
+.hoi-root .hoi-hud__chip-icon { color: var(--hoi-brass); }
+.hoi-root .hoi-hud__chip-brand { font: 700 10.5px/1 var(--hoi-font-display); letter-spacing: 0.1em; text-transform: uppercase; color: var(--hoi-ink-dim); }
+.hoi-root .hoi-hud__chip-cta { font: 700 10.5px/1 var(--hoi-font-ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--hoi-brass); }
+
+/* ------------------------------------------------------ narrow columns */
+@container hoihud (max-width: 1000px) {
+    .hoi-root .hoi-hud__leader,
+    .hoi-root .hoi-hud__tension-k,
+    .hoi-root .hoi-hud__pending .hoi-hud__btn-text { display: none; }
+}
+@container hoihud (max-width: 880px) {
+    .hoi-root .hoi-hud__date-long { display: none; }
+    .hoi-root .hoi-hud__date-short { display: inline; }
+    .hoi-root .hoi-hud__tension-bar { width: 48px; }
+}
+@container hoihud (max-width: 740px) {
+    .hoi-root .hoi-hud__warroom .hoi-hud__btn-text,
+    .hoi-root .hoi-hud__tension { display: none; }
+    .hoi-root .hoi-hud__warroom { padding: 4px 7px; }
+}
+@container hoihud (max-width: 600px) {
+    .hoi-root .hoi-hud__nation-text { display: none; }
+    .hoi-root .hoi-hud__tension-bar { width: 40px; }
+    .hoi-root .hoi-hud__stats { gap: 8px; padding-left: 8px; }
+}
+@container hoihud (max-width: 470px) {
+    .hoi-root .hoi-hud__bar { gap: 5px; padding: 4px 4px 4px 3px; }
+    .hoi-root .hoi-hud__pc-k,
+    .hoi-root .hoi-hud__war,
+    .hoi-root .hoi-hud__pending i,
+    .hoi-root .hoi-hud__pc .hoi-hud__stat-icon,
+    .hoi-root .hoi-hud__date .hoi-hud__stat-icon,
+    .hoi-root .hoi-hud__defcon-k,
+    .hoi-root .hoi-hud__end-long { display: none; }
+    .hoi-root .hoi-hud__end-short { display: inline; }
+    .hoi-root .hoi-hud__nation { padding: 2px; }
+    .hoi-root .hoi-hud__stats { padding-left: 6px; gap: 6px; }
+    .hoi-root .hoi-hud__pending { padding: 3px 4px; }
+    .hoi-root .hoi-hud__actions { gap: 4px; }
+    .hoi-root .hoi-hud__end { padding: 4px 8px; }
+    .hoi-root .hoi-hud__collapse { min-width: 24px; }
+    .hoi-root .hoi-hud__chip-brand { display: none; }
+}
+@container hoihud (max-width: 330px) {
+    .hoi-root .hoi-hud__end-short { display: none; }
+}

@@ -1,0 +1,261 @@
+/*
+ * css/base.css — shared theme + primitives for every HOI surface.
+ * OWNER: orchestrator (contract). UI modules build on these variables/classes
+ * and must not redefine them. Everything is scoped under .hoi-root so nothing
+ * leaks into SillyTavern's own UI. Font Awesome 6 is provided by SillyTavern.
+ */
+
+.hoi-root {
+    /* surfaces */
+    --hoi-bg: #0e1113;
+    --hoi-bg-2: #151a1d;
+    --hoi-panel: rgba(20, 25, 28, 0.96);
+    --hoi-panel-2: #1c2327;
+    --hoi-panel-3: #252e33;
+    --hoi-line: #313c3e;
+    --hoi-line-2: #4a5856;
+    /* ink */
+    --hoi-ink: #e9e4d6;
+    --hoi-ink-dim: #a7aa9e;
+    --hoi-ink-faint: #6f746c;
+    /* accents */
+    --hoi-brass: #c9a227;
+    --hoi-brass-2: #8c7118;
+    --hoi-brass-glow: rgba(201, 162, 39, 0.35);
+    --hoi-red: #c4473a;
+    --hoi-red-2: #8f2a21;
+    --hoi-green: #5f9b62;
+    --hoi-blue: #4a7fb5;
+    --hoi-amber: #d9963a;
+    /* map */
+    --hoi-ocean: #0b1820;
+    --hoi-ocean-2: #10232e;
+    --hoi-land-neutral: #59605a;
+    --hoi-border-line: #0c0f10;
+    /* type */
+    --hoi-font-display: "Cinzel", "Trajan Pro", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    --hoi-font-ui: "Segoe UI", "Inter", system-ui, -apple-system, Roboto, sans-serif;
+    --hoi-font-mono: "JetBrains Mono", "Consolas", "Menlo", monospace;
+    /* shape */
+    --hoi-radius: 4px;
+    --hoi-radius-lg: 8px;
+    --hoi-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    --hoi-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+    /* layers (SillyTavern's own popups use the top layer and stay above) */
+    --hoi-z-hud: 3000;
+    --hoi-z-warroom: 9000;
+    --hoi-z-modal: 9500;
+    --hoi-z-tooltip: 9800;
+
+    color: var(--hoi-ink);
+    font-family: var(--hoi-font-ui);
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+}
+
+.hoi-root,
+.hoi-root *,
+.hoi-root *::before,
+.hoi-root *::after {
+    box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------- typography */
+.hoi-root .hoi-title {
+    font-family: var(--hoi-font-display);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--hoi-brass);
+    margin: 0;
+}
+.hoi-root .hoi-subtitle {
+    font-family: var(--hoi-font-display);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--hoi-ink-dim);
+}
+.hoi-root .hoi-dim { color: var(--hoi-ink-dim); }
+.hoi-root .hoi-faint { color: var(--hoi-ink-faint); }
+.hoi-root .hoi-good { color: #8fc58b; }
+.hoi-root .hoi-bad { color: #e07a6c; }
+.hoi-root .hoi-num { font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- buttons */
+.hoi-root .hoi-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 30px;
+    padding: 5px 12px;
+    border: 1px solid var(--hoi-line-2);
+    border-radius: var(--hoi-radius);
+    background: linear-gradient(180deg, var(--hoi-panel-3), var(--hoi-panel-2));
+    color: var(--hoi-ink);
+    font: 600 12px/1 var(--hoi-font-ui);
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.05s;
+}
+.hoi-root .hoi-btn:hover { border-color: var(--hoi-brass); box-shadow: 0 0 0 1px var(--hoi-brass-glow); }
+.hoi-root .hoi-btn:active { transform: translateY(1px); }
+.hoi-root .hoi-btn:focus-visible { outline: 2px solid var(--hoi-brass); outline-offset: 1px; }
+.hoi-root .hoi-btn:disabled,
+.hoi-root .hoi-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; box-shadow: none; border-color: var(--hoi-line); }
+.hoi-root .hoi-btn--primary {
+    background: linear-gradient(180deg, #d9b23a, var(--hoi-brass-2));
+    border-color: #6e5812;
+    color: #171104;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.hoi-root .hoi-btn--primary:hover { border-color: #f0d36a; }
+.hoi-root .hoi-btn--danger {
+    background: linear-gradient(180deg, #c9554a, var(--hoi-red-2));
+    border-color: #5e1a14;
+    color: #fff;
+}
+.hoi-root .hoi-btn--ghost { background: transparent; border-color: transparent; }
+.hoi-root .hoi-btn--ghost:hover { background: rgba(255, 255, 255, 0.05); border-color: var(--hoi-line-2); box-shadow: none; }
+.hoi-root .hoi-btn--icon { min-width: 30px; padding: 5px; }
+.hoi-root .hoi-btn--lg { min-height: 40px; padding: 8px 18px; font-size: 14px; }
+
+/* ------------------------------------------------------------ containers */
+.hoi-root .hoi-card {
+    background: var(--hoi-panel-2);
+    border: 1px solid var(--hoi-line);
+    border-radius: var(--hoi-radius-lg);
+    padding: 10px 12px;
+}
+.hoi-root .hoi-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 0 4px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--hoi-line);
+    font-family: var(--hoi-font-display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--hoi-ink-dim);
+}
+.hoi-root .hoi-sep { height: 1px; background: var(--hoi-line); margin: 8px 0; border: 0; }
+.hoi-root .hoi-scroll { overflow: auto; scrollbar-width: thin; scrollbar-color: var(--hoi-line-2) transparent; }
+.hoi-root .hoi-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.hoi-root .hoi-scroll::-webkit-scrollbar-thumb { background: var(--hoi-line-2); border-radius: 8px; }
+
+/* ----------------------------------------------------------- chips/badges */
+.hoi-root .hoi-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: 1px solid var(--hoi-line-2);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+.hoi-root .hoi-chip--good { border-color: #3f6e42; color: #9bd197; }
+.hoi-root .hoi-chip--bad { border-color: #7a2c24; color: #f0958a; }
+.hoi-root .hoi-chip--brass { border-color: var(--hoi-brass-2); color: var(--hoi-brass); }
+.hoi-root .hoi-badge {
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--hoi-red);
+    color: #fff;
+    font: 700 10px/1 var(--hoi-font-ui);
+}
+
+/* ------------------------------------------------------------------ bars */
+.hoi-root .hoi-bar {
+    position: relative;
+    height: 6px;
+    border-radius: 3px;
+    background: #0a0d0e;
+    border: 1px solid #000;
+    overflow: hidden;
+}
+.hoi-root .hoi-bar > .hoi-bar__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--pct, 0%);
+    background: var(--fill, var(--hoi-brass));
+    transition: width 0.4s ease;
+}
+
+/* ----------------------------------------------------------------- flags */
+.hoi-root .hoi-flag {
+    display: inline-block;
+    width: 28px;
+    height: 21px;
+    object-fit: cover;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    border-radius: 2px;
+    box-shadow: var(--hoi-shadow-sm);
+    background: var(--hoi-panel-3);
+    vertical-align: middle;
+    flex: none;
+}
+.hoi-root .hoi-flag--sm { width: 20px; height: 15px; }
+.hoi-root .hoi-flag--lg { width: 64px; height: 48px; }
+.hoi-root .hoi-flag--emoji { display: inline-flex; align-items: center; justify-content: center; font-size: 16px; border: 0; box-shadow: none; background: none; }
+
+/* ------------------------------------------------------- overlay / forms */
+.hoi-root.hoi-overlay {
+    position: fixed;
+    inset: 0;
+    /* ST's style.css sets `html { transform: translateZ(0) }`, so <html> (not the
+       viewport) is the containing block of fixed elements. On mobile ST makes <body>
+       position:fixed and <html> is 0px tall: `inset: 0` alone collapses to height 0. */
+    height: 100vh;
+    height: 100dvh;
+    z-index: var(--hoi-z-warroom);
+}
+.hoi-root .hoi-input,
+.hoi-root .hoi-select,
+.hoi-root .hoi-textarea {
+    width: 100%;
+    padding: 6px 9px;
+    border: 1px solid var(--hoi-line-2);
+    border-radius: var(--hoi-radius);
+    background: #0b0e0f;
+    color: var(--hoi-ink);
+    font: 13px/1.4 var(--hoi-font-ui);
+}
+.hoi-root .hoi-input:focus,
+.hoi-root .hoi-select:focus,
+.hoi-root .hoi-textarea:focus { outline: none; border-color: var(--hoi-brass); box-shadow: 0 0 0 2px var(--hoi-brass-glow); }
+
+/* --------------------------------------------------------------- spinner */
+.hoi-root .hoi-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--hoi-line-2);
+    border-top-color: var(--hoi-brass);
+    border-radius: 50%;
+    animation: hoi-spin 0.8s linear infinite;
+    display: inline-block;
+}
+@keyframes hoi-spin { to { transform: rotate(360deg); } }
+@keyframes hoi-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.15); }
+}
+@keyframes hoi-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .hoi-root *, .hoi-root *::before, .hoi-root *::after { animation: none !important; transition: none !important; }
+}

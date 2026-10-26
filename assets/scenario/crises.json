@@ -1,82 +1,122 @@
 [
   {
-    "id": "crisis-eastern-front",
-    "title": "Impasse na Fronteira do Leste Europeu",
-    "description": "Concentrações militares russas e belarussas ao longo da fronteira com a Ucrânia e a Polônia atingem níveis sem precedentes. A OTAN ativa planos de reforço no flanco oriental enquanto Moscou exige garantias de segurança e o fim da expansão da aliança.",
-    "severity": "high",
-    "involvedNationIds": ["RUS", "UKR", "POL", "USA", "BLR"],
+    "id": "crisis-hormuz",
+    "title": "Crise do Estreito de Ormuz",
+    "description": "Desde o cessar-fogo de abril, o Irã reivindica o controle do Estreito de Ormuz, por onde passa um quinto do petróleo mundial. Minas navais e ataques a petroleiros alimentam o medo de uma volta à guerra aberta com EUA e Israel.",
+    "severity": "critical",
+    "involved": ["IRN", "USA", "ISR", "SAU", "ARE", "QAT", "OMN"],
     "turnStarted": 0,
-    "startingTension": 14,
-    "data": { "region": "Europa Oriental", "flashpoint": "Donbas e Kaliningrado" }
+    "category": "energy",
+    "region": "Golfo Pérsico"
   },
   {
     "id": "crisis-taiwan-strait",
-    "title": "Tensão no Estreito de Taiwan",
-    "description": "A China intensifica exercícios navais e aéreos em torno de Taiwan, cruzando repetidamente a linha mediana. Porta-aviões dos Estados Unidos e do Japão se posicionam na região, elevando o risco de um incidente que escape ao controle.",
-    "severity": "critical",
-    "involvedNationIds": ["CHN", "USA", "JPN", "KOR", "AUS"],
-    "turnStarted": 0,
-    "startingTension": 16,
-    "data": { "region": "Indo-Pacífico", "flashpoint": "Estreito de Taiwan" }
-  },
-  {
-    "id": "crisis-south-china-sea",
-    "title": "Incidente no Mar do Sul da China",
-    "description": "Um choque entre navios da guarda costeira chinesa e embarcações do sudeste asiático em recifes disputados provoca indignação internacional. Rotas comerciais vitais ficam ameaçadas e a liberdade de navegação entra em xeque.",
+    "title": "Pressão Militar no Estreito de Taiwan",
+    "description": "Navios da guarda costeira, milícias marítimas e aviões militares chineses cercam Taiwan quase diariamente, em manobras que Taipé descreve como preparação do campo de batalha. Japão e Filipinas também relatam pressão em suas águas.",
     "severity": "high",
-    "involvedNationIds": ["CHN", "IDN", "USA", "AUS"],
+    "involved": ["CHN", "TWN", "USA", "JPN", "PHL"],
     "turnStarted": 0,
-    "startingTension": 10,
-    "data": { "region": "Sudeste Asiático", "flashpoint": "Ilhas Spratly" }
+    "category": "naval",
+    "region": "Indo-Pacífico"
   },
   {
-    "id": "crisis-middle-east-energy",
-    "title": "Crise Energética no Oriente Médio",
-    "description": "Um confronto entre Irã e Israel ameaça fechar o Estreito de Ormuz, por onde passa boa parte do petróleo mundial. Os preços da energia disparam e as potências dependentes de importação entram em pânico estratégico.",
+    "id": "crisis-eastern-flank",
+    "title": "Incidentes no Flanco Leste da OTAN",
+    "description": "Drones que violam o espaço aéreo, sabotagens e ataques híbridos se multiplicam da Finlândia à Romênia. A OTAN reforça a vigilância na fronteira com Rússia e Belarus, enquanto cada incidente testa a coesão da aliança.",
     "severity": "high",
-    "involvedNationIds": ["IRN", "ISR", "SAU", "USA"],
+    "involved": ["RUS", "BLR", "POL", "EST", "LVA", "LTU", "FIN", "ROU"],
     "turnStarted": 0,
-    "startingTension": 12,
-    "data": { "region": "Oriente Médio", "flashpoint": "Estreito de Ormuz" }
-  },
-  {
-    "id": "crisis-cyber-attribution",
-    "title": "Atribuição de Ciberataque às Infraestruturas Críticas",
-    "description": "Um ataque cibernético massivo derruba redes elétricas e sistemas financeiros em várias capitais ocidentais. Agências de inteligência apontam para atores estatais rivais, mas a falta de prova definitiva divide a resposta das alianças.",
-    "severity": "medium",
-    "involvedNationIds": ["USA", "RUS", "CHN", "GBR", "DEU"],
-    "turnStarted": 0,
-    "startingTension": 8,
-    "data": { "region": "Global", "domain": "Ciberespaço" }
-  },
-  {
-    "id": "crisis-arctic-dispute",
-    "title": "Disputa pelos Recursos do Ártico",
-    "description": "O degelo abre novas rotas e jazidas no Ártico. Rússia, Canadá e os países nórdicos da OTAN enviam patrulhas militares para reivindicar o controle, transformando o extremo norte em uma nova fronteira de atrito.",
-    "severity": "medium",
-    "involvedNationIds": ["RUS", "CAN", "USA"],
-    "turnStarted": 0,
-    "startingTension": 6,
-    "data": { "region": "Ártico", "resource": "Hidrocarbonetos e rotas de navegação" }
+    "category": "military",
+    "region": "Europa Oriental"
   },
   {
     "id": "crisis-korean-peninsula",
-    "title": "Escalada na Península Coreana",
-    "description": "A Coreia do Norte realiza uma série de testes de mísseis balísticos intercontinentais e sugere um novo ensaio nuclear. Seul e Tóquio pressionam por uma resposta firme enquanto Pequim pede contenção.",
-    "severity": "high",
-    "involvedNationIds": ["PRK", "KOR", "JPN", "USA", "CHN"],
+    "title": "Tensão na Península Coreana",
+    "description": "A Coreia do Norte, agora aliada formal da Rússia, amplia testes de mísseis e o arsenal nuclear. Seul e Tóquio reforçam a cooperação com Washington, enquanto Pequim pede contenção.",
+    "severity": "medium",
+    "involved": ["PRK", "KOR", "JPN", "USA", "CHN"],
     "turnStarted": 0,
-    "startingTension": 9,
-    "data": { "region": "Leste Asiático", "flashpoint": "Zona Desmilitarizada" }
+    "category": "nuclear",
+    "region": "Leste Asiático"
   },
   {
-    "id": "crisis-sahel-proxy",
-    "title": "Guerra por Procuração no Sahel",
-    "description": "A retirada de forças ocidentais abre espaço para a disputa de influência entre potências rivais em estados frágeis da África. Empresas militares privadas e fluxos de armas desestabilizam ainda mais a região.",
-    "severity": "low",
-    "involvedNationIds": ["RUS", "FRA", "ZAF"],
+    "id": "crisis-venezuela-transition",
+    "title": "Transição Incerta na Venezuela",
+    "description": "Nove meses após a operação americana que capturou o antigo presidente, o governo interino adia a data das eleições enquanto a oposição volta às ruas. A disputa pelo petróleo e a influência de Washington dividem a região.",
+    "severity": "medium",
+    "involved": ["VEN", "USA", "COL", "BRA", "CUB"],
     "turnStarted": 0,
-    "startingTension": 4,
-    "data": { "region": "África", "domain": "Influência por procuração" }
+    "category": "politics",
+    "region": "América do Sul"
+  },
+  {
+    "id": "crisis-sudan-war",
+    "title": "Guerra Civil no Sudão",
+    "description": "Em seu quarto ano, a guerra entre o Exército e as Forças de Apoio Rápido virou uma guerra de drones contra cidades. Milhões de deslocados e a fome em Darfur e Kordofan pressionam os vizinhos.",
+    "severity": "high",
+    "involved": ["SDN", "SSD", "TCD", "EGY"],
+    "turnStarted": 0,
+    "category": "humanitarian",
+    "region": "Nordeste da África"
+  },
+  {
+    "id": "crisis-sahel",
+    "title": "Insurgência e Juntas no Sahel",
+    "description": "As juntas militares de Mali, Burkina Faso e Níger romperam com a CEDEAO e com a França e se apoiam em instrutores russos, mas grupos jihadistas avançam sobre estradas e cidades. A instabilidade ameaça transbordar para o litoral do Golfo da Guiné.",
+    "severity": "medium",
+    "involved": ["MLI", "BFA", "NER", "NGA", "DZA", "RUS"],
+    "turnStarted": 0,
+    "category": "unrest",
+    "region": "Sahel"
+  },
+  {
+    "id": "crisis-afpak-border",
+    "title": "Confrontos na Fronteira Afeganistão–Paquistão",
+    "description": "O Paquistão acusa o governo talibã de abrigar militantes e bombardeia alvos em território afegão. Um cessar-fogo de março não impediu novos ataques, e as passagens de fronteira continuam fechadas.",
+    "severity": "medium",
+    "involved": ["PAK", "AFG"],
+    "turnStarted": 0,
+    "category": "military",
+    "region": "Ásia Meridional"
+  },
+  {
+    "id": "crisis-gaza",
+    "title": "Cessar-fogo Frágil em Gaza",
+    "description": "Um ano depois do cessar-fogo, a Faixa de Gaza segue em ruínas, com ataques frequentes e ajuda humanitária insuficiente. Egito e Catar mediam um acordo sobre a reconstrução e a administração do território.",
+    "severity": "high",
+    "involved": ["ISR", "PSE", "EGY", "QAT", "USA"],
+    "turnStarted": 0,
+    "category": "humanitarian",
+    "region": "Levante"
+  },
+  {
+    "id": "crisis-hybrid-europe",
+    "title": "Sabotagem Híbrida e Ciberataques na Europa",
+    "description": "Centenas de incidentes suspeitos, de incêndios criminosos a cabos submarinos cortados e ataques a redes elétricas, atingem a Europa. Os serviços de inteligência apontam para atores estatais, mas a atribuição divide os governos.",
+    "severity": "medium",
+    "involved": ["RUS", "DEU", "GBR", "FRA", "POL", "NLD"],
+    "turnStarted": 0,
+    "category": "cyber",
+    "region": "Europa"
+  },
+  {
+    "id": "crisis-arctic",
+    "title": "Corrida pelo Ártico e pela Groenlândia",
+    "description": "O acordo de setembro entre EUA, Dinamarca e Groenlândia amplia a presença militar americana na ilha, enquanto a Rússia militariza a Rota do Mar do Norte. O degelo abre novas rotas e jazidas no extremo norte.",
+    "severity": "low",
+    "involved": ["USA", "DNK", "CAN", "RUS", "NOR"],
+    "turnStarted": 0,
+    "category": "diplomacy",
+    "region": "Ártico"
+  },
+  {
+    "id": "crisis-south-china-sea",
+    "title": "Atritos no Mar do Sul da China",
+    "description": "Choques entre guardas costeiras em recifes disputados se repetem, com canhões de água e abalroamentos. As Filipinas pedem apoio aos aliados enquanto rotas comerciais vitais ficam sob risco.",
+    "severity": "medium",
+    "involved": ["CHN", "PHL", "VNM", "MYS", "USA"],
+    "turnStarted": 0,
+    "category": "naval",
+    "region": "Sudeste Asiático"
   }
 ]

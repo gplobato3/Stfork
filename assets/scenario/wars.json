@@ -1,0 +1,16 @@
+[
+  {
+    "id": "war-rus-ukr",
+    "name": "Guerra Russo-Ucraniana",
+    "attackers": ["RUS"],
+    "defenders": ["UKR"],
+    "startedTurn": 0,
+    "startedDate": { "year": 2022, "month": 2 },
+    "fronts": [
+      { "attacker": "RUS", "defender": "UKR", "progress": 20 }
+    ],
+    "score": 12,
+    "exhaustion": { "RUS": 48, "UKR": 62 },
+    "ceasefire": false
+  }
+]

@@ -1,4 +1,0 @@
-# Handlebars .html templates (Module D / FEAT-005) live here, rendered via
-# ctx.renderExtensionTemplateAsync('third-party/Stfork', '<name>', data).
-# Expected templates: dashboard, map, eventModal, nationPicker, settings.
-# Keep this file so the dir is tracked.

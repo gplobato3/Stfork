@@ -8,3 +8,5 @@ coverage/
 .vscode/
 .idea/
 *.tmp
+# Dev preview screenshots (large PNGs); the curated ones live in docs/screenshots/.
+dev/**/screenshots/
