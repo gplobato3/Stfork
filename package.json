@@ -1,0 +1,17 @@
+{
+    "name": "st-hoi-grande-estrategia",
+    "version": "1.0.0",
+    "description": "Hearts of Iron-style grand-strategy game as a SillyTavern third-party UI extension (modern-day / near-future WW3). Dev tooling only; the shipped extension has no runtime npm dependencies.",
+    "type": "module",
+    "private": true,
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://github.com/gplobato3/Stfork",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gplobato3/Stfork.git"
+    },
+    "scripts": {
+        "check": "node tools/check.mjs",
+        "test": "node --test"
+    }
+}

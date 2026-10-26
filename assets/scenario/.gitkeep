@@ -1,0 +1,6 @@
+# Scenario assets (Module B / FEAT-003) live here:
+#   - nations.json      starting Nation stats (ISO alpha-3 keyed)
+#   - relations.json    initial 'A|B' -> relation score map
+#   - world.geo.json    GeoJSON FeatureCollection for the world map
+#   - crisis-seeds.json initial Crisis[] at game start
+# Authored static assets, not generated. Keep this file so the dir is tracked.

@@ -1,0 +1,50 @@
+{{!--
+  templates/settings.html — extension settings panel appended to
+  #extensions_settings2. Data from buildSettingsTemplateData() in settings.js
+  (pt-BR labels ready). Handlebars auto-escapes; ST runs DOMPurify.
+--}}
+<div class="hoi-settings inline-drawer">
+    <div class="inline-drawer-toggle inline-drawer-header">
+        <b class="hoi-settings__title">{{title}}</b>
+        <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+    </div>
+    <div class="inline-drawer-content hoi-settings__content">
+
+        <label class="hoi-settings__row checkbox_label">
+            <input type="checkbox" data-setting="enabled" {{#if enabled}}checked{{/if}} />
+            <span>{{enabledLabel}}</span>
+        </label>
+
+        <div class="hoi-settings__row">
+            <label class="hoi-settings__label" for="hoi-difficulty">{{difficultyLabel}}</label>
+            <input type="range" id="hoi-difficulty" class="hoi-settings__slider" min="0" max="3" step="1"
+                   data-setting="difficulty" value="{{difficulty}}" />
+            <span class="hoi-settings__slider-value" data-role="difficulty-value">{{difficultyName}}</span>
+            <small class="hoi-settings__hint">{{difficultyHint}}</small>
+        </div>
+
+        <label class="hoi-settings__row checkbox_label">
+            <input type="checkbox" data-setting="injectSitrep" {{#if injectSitrep}}checked{{/if}} />
+            <span>{{injectSitrepLabel}}</span>
+        </label>
+        <small class="hoi-settings__hint">{{injectSitrepHint}}</small>
+
+        <div class="hoi-settings__row">
+            <button type="button" class="hoi-btn hoi-btn--danger" data-action="reset-campaign">{{resetLabel}}</button>
+            <small class="hoi-settings__hint">{{resetHint}}</small>
+        </div>
+
+        <fieldset class="hoi-settings__imagegen" disabled>
+            <legend class="hoi-settings__imagegen-title">
+                {{imagegenTitle}} <span class="hoi-badge hoi-badge--soon">{{comingSoon}}</span>
+            </legend>
+            <small class="hoi-settings__hint">{{imagegenHint}}</small>
+            <div class="hoi-settings__row">
+                <label class="hoi-settings__label" for="hoi-replicate-token">{{imagegenTokenLabel}}</label>
+                <input type="password" id="hoi-replicate-token" class="hoi-settings__input"
+                       data-setting="replicateTokenRuntime" placeholder="{{imagegenTokenPlaceholder}}"
+                       autocomplete="off" />
+            </div>
+        </fieldset>
+    </div>
+</div>

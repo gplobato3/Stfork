@@ -1,0 +1,82 @@
+[
+  {
+    "id": "crisis-eastern-front",
+    "title": "Impasse na Fronteira do Leste Europeu",
+    "description": "Concentrações militares russas e belarussas ao longo da fronteira com a Ucrânia e a Polônia atingem níveis sem precedentes. A OTAN ativa planos de reforço no flanco oriental enquanto Moscou exige garantias de segurança e o fim da expansão da aliança.",
+    "severity": "high",
+    "involvedNationIds": ["RUS", "UKR", "POL", "USA", "BLR"],
+    "turnStarted": 0,
+    "startingTension": 14,
+    "data": { "region": "Europa Oriental", "flashpoint": "Donbas e Kaliningrado" }
+  },
+  {
+    "id": "crisis-taiwan-strait",
+    "title": "Tensão no Estreito de Taiwan",
+    "description": "A China intensifica exercícios navais e aéreos em torno de Taiwan, cruzando repetidamente a linha mediana. Porta-aviões dos Estados Unidos e do Japão se posicionam na região, elevando o risco de um incidente que escape ao controle.",
+    "severity": "critical",
+    "involvedNationIds": ["CHN", "USA", "JPN", "KOR", "AUS"],
+    "turnStarted": 0,
+    "startingTension": 16,
+    "data": { "region": "Indo-Pacífico", "flashpoint": "Estreito de Taiwan" }
+  },
+  {
+    "id": "crisis-south-china-sea",
+    "title": "Incidente no Mar do Sul da China",
+    "description": "Um choque entre navios da guarda costeira chinesa e embarcações do sudeste asiático em recifes disputados provoca indignação internacional. Rotas comerciais vitais ficam ameaçadas e a liberdade de navegação entra em xeque.",
+    "severity": "high",
+    "involvedNationIds": ["CHN", "IDN", "USA", "AUS"],
+    "turnStarted": 0,
+    "startingTension": 10,
+    "data": { "region": "Sudeste Asiático", "flashpoint": "Ilhas Spratly" }
+  },
+  {
+    "id": "crisis-middle-east-energy",
+    "title": "Crise Energética no Oriente Médio",
+    "description": "Um confronto entre Irã e Israel ameaça fechar o Estreito de Ormuz, por onde passa boa parte do petróleo mundial. Os preços da energia disparam e as potências dependentes de importação entram em pânico estratégico.",
+    "severity": "high",
+    "involvedNationIds": ["IRN", "ISR", "SAU", "USA"],
+    "turnStarted": 0,
+    "startingTension": 12,
+    "data": { "region": "Oriente Médio", "flashpoint": "Estreito de Ormuz" }
+  },
+  {
+    "id": "crisis-cyber-attribution",
+    "title": "Atribuição de Ciberataque às Infraestruturas Críticas",
+    "description": "Um ataque cibernético massivo derruba redes elétricas e sistemas financeiros em várias capitais ocidentais. Agências de inteligência apontam para atores estatais rivais, mas a falta de prova definitiva divide a resposta das alianças.",
+    "severity": "medium",
+    "involvedNationIds": ["USA", "RUS", "CHN", "GBR", "DEU"],
+    "turnStarted": 0,
+    "startingTension": 8,
+    "data": { "region": "Global", "domain": "Ciberespaço" }
+  },
+  {
+    "id": "crisis-arctic-dispute",
+    "title": "Disputa pelos Recursos do Ártico",
+    "description": "O degelo abre novas rotas e jazidas no Ártico. Rússia, Canadá e os países nórdicos da OTAN enviam patrulhas militares para reivindicar o controle, transformando o extremo norte em uma nova fronteira de atrito.",
+    "severity": "medium",
+    "involvedNationIds": ["RUS", "CAN", "USA"],
+    "turnStarted": 0,
+    "startingTension": 6,
+    "data": { "region": "Ártico", "resource": "Hidrocarbonetos e rotas de navegação" }
+  },
+  {
+    "id": "crisis-korean-peninsula",
+    "title": "Escalada na Península Coreana",
+    "description": "A Coreia do Norte realiza uma série de testes de mísseis balísticos intercontinentais e sugere um novo ensaio nuclear. Seul e Tóquio pressionam por uma resposta firme enquanto Pequim pede contenção.",
+    "severity": "high",
+    "involvedNationIds": ["PRK", "KOR", "JPN", "USA", "CHN"],
+    "turnStarted": 0,
+    "startingTension": 9,
+    "data": { "region": "Leste Asiático", "flashpoint": "Zona Desmilitarizada" }
+  },
+  {
+    "id": "crisis-sahel-proxy",
+    "title": "Guerra por Procuração no Sahel",
+    "description": "A retirada de forças ocidentais abre espaço para a disputa de influência entre potências rivais em estados frágeis da África. Empresas militares privadas e fluxos de armas desestabilizam ainda mais a região.",
+    "severity": "low",
+    "involvedNationIds": ["RUS", "FRA", "ZAF"],
+    "turnStarted": 0,
+    "startingTension": 4,
+    "data": { "region": "África", "domain": "Influência por procuração" }
+  }
+]

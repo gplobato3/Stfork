@@ -1,0 +1,35 @@
+{{!--
+  templates/eventModal.html — per-turn event / decision modal.
+  Data from buildEventTemplateData() in eventModal.js (pt-BR labels ready).
+  Handlebars auto-escapes; ST runs DOMPurify.
+--}}
+<div class="hoi-event">
+    <header class="hoi-event__header">
+        <h3 class="hoi-event__title">{{title}}</h3>
+        {{#if tensionBadge}}
+        <span class="hoi-event__tension" style="color:{{tensionColor}}">{{tensionBadge}}</span>
+        {{/if}}
+    </header>
+
+    <div class="hoi-event__body">
+        <p class="hoi-event__narrative">{{narrative}}</p>
+        {{#if hasContext}}
+        <div class="hoi-event__context">
+            <div class="hoi-event__context-label">{{contextLabel}}</div>
+            <p>{{context}}</p>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="hoi-event__options" data-role="event-options">
+        <div class="hoi-event__options-label">{{optionsLabel}}</div>
+        {{#each options}}
+        <button type="button" class="hoi-option" data-option="{{this.id}}">
+            <span class="hoi-option__label">{{this.label}}</span>
+            {{#if this.hasRationale}}
+            <span class="hoi-option__rationale"><em>{{../rationaleLabel}}:</em> {{this.rationale}}</span>
+            {{/if}}
+        </button>
+        {{/each}}
+    </div>
+</div>
