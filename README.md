@@ -1,175 +1,139 @@
-# HOI — Grande Estratégia (extensão para SillyTavern)
+# Grande Estratégia — uma campanha estilo Hearts of Iron dentro do SillyTavern
 
-> Um jogo de grande estratégia no estilo *Hearts of Iron*, ambientado no mundo
-> moderno / futuro próximo (cenário de Terceira Guerra Mundial, a partir de 2027).
-> Você é o chefe de Estado (Rei, Presidente, Chanceler...) da nação que escolher.
-> Toda a simulação é conduzida pela geração de texto e pela injeção de prompts do
-> próprio SillyTavern, **integrando-se ao seu preset e personagem** — nunca os
-> substituindo.
+Você é o chefe de Estado. Escolha um período (2026, 2028 ou 2031), uma nação entre 72 e o seu
+nome como governante. A **Sala de Guerra** mostra o mapa-múndi, os recursos do seu país, as
+guerras, as crises e as ações de governo. O chat continua sendo o seu SillyTavern de sempre, com
+o seu preset e o seu personagem: a extensão só acrescenta um relatório de situação ao prompt, e
+as ordens que você dá no chat viram ações de verdade no jogo.
 
-**Status:** v1.0.0. Esta é uma extensão de interface (UI) de terceiros;
-**não** é um fork do SillyTavern nem um plugin de servidor. Não requer
-`npm install` e não tem dependências de runtime (usa `SillyTavern.libs`).
+![Sala de Guerra](docs/screenshots/war-room.webp)
 
----
+## Como funciona
 
-## O que é
+- **O motor decide, o chat narra.** Recursos, guerras, relações e crises mudam só por regras
+  determinísticas (com dados e custos). A IA escreve os eventos, os boletins e as falas do
+  gabinete, mas não consegue inventar números.
+- **Ordens no chat.** Escreva como governante: *"Ordeno a mobilização parcial das Forças
+  Armadas"* ou *"Quero melhorar as relações com a Argentina"*. Antes da resposta, um árbitro
+  converte a ordem em ações do catálogo, o motor as executa (com custo e chance de sucesso) e o
+  resultado entra no relatório de situação. A resposta do personagem já narra o que aconteceu.
+  Regenerar ou trocar de swipe não executa a ordem de novo.
+- **Turnos mensais.** Em **Avançar Mês** o mundo se move: as outras nações agem, as frentes de
+  batalha andam, crises surgem e se resolvem, a tensão global sobe ou cai. Depois a IA escreve
+  uma decisão para você, baseada no estado do jogo e nas últimas mensagens do chat, e um
+  **Boletim Internacional** é publicado no chat.
+- **Cada chat é uma campanha.** O estado fica salvo nos metadados do chat. Trocar de chat troca
+  de campanha.
 
-A extensão transforma uma conversa do SillyTavern em uma campanha de grande
-estratégia. Você assume a chefia de Estado de uma nação, acompanha um painel de
-governo com 7 recursos e um medidor de **Tensão Global**, e a cada turno a IA
-apresenta um **evento** com **decisões**. As decisões aplicam efeitos
-determinísticos ao estado do jogo (recursos, relações, crises, tensão) e o
-mundo evolui mês a mês rumo — ou não — a um conflito global.
+![Decisão do mês](docs/screenshots/event-dialog.webp)
 
-O ponto central do projeto: a extensão **trabalha com o seu preset e o seu
-personagem**, não contra eles. Antes de cada geração, um **relatório de
-situação** (compacto, em pt-BR) é injetado no chat como uma nota de sistema,
-**sem substituir** o seu preset, o seu personagem ou o seu histórico. A IA
-responde grounded no estado real do jogo, mas com a sua própria voz.
+## Conteúdo
 
-## Recursos
-
-- 🗺️ **Mapa-múndi** interativo com destaque para a sua nação e a tensão global.
-- 📊 **Painel do governante** (Sala de Guerra) com os 7 recursos: Economia,
-  Militar, Estabilidade, Influência, Tecnologia, Efetivos e Apoio à Guerra.
-- 🌡️ Medidor de **Tensão Global** (0 a 100): o termômetro da escalada para a
-  Terceira Guerra Mundial.
-- 🎲 **Motor de eventos/decisões guiado pela IA**, com saída estruturada
-  (JSON Schema) validada antes de aplicar qualquer efeito; em caso de falha,
-  um evento local de contingência mantém o jogo em andamento (nunca trava).
-- 🤝 **Relações, blocos e crises** entre nações, com guerra, cessar-fogo e paz.
-- ✍️ **Narração imersiva opcional** no chat após cada decisão, na voz do seu
-  personagem/preset.
-- 💾 **Cada chat é uma campanha** (salvamento automático via `chatMetadata`).
-- ⌨️ **Comandos de barra** (`/hoi`, `/hoi-newgame`, ...) para jogar sem sair do chat.
-- 🇧🇷 Interface e textos em **português do Brasil**.
+| | |
+|---|---|
+| Períodos | **2026 — O Mundo Hoje** (tensão 42), **2028 — À Beira do Abismo** (62), **2031 — A Terceira Guerra Mundial** (84, com frentes ativas na Europa, no Pacífico e na Coreia) |
+| Nações | 171 países no mapa, 72 jogáveis, com recursos, personalidade de IA, arsenal nuclear e pactos (OTAN, OTSC, Mercosul, ANZUS...) |
+| Ações | 35 ações em 5 áreas: diplomacia, militar, economia, política interna e inteligência |
+| Guerra | Frentes com ocupação, exaustão, chamados às armas, cessar-fogo, termos de paz, fantoches e anexação |
+| Mapa | Modos político, diplomático, militar e de crises, zoom e arraste, marcadores de frente e de crise |
+| Fim de jogo | Vitória ao chegar ao fim do período com a nação de pé (ou hegemonia); derrota por anexação, golpe de Estado ou guerra nuclear global (tensão 100) |
 
 ## Instalação
 
-### Opção A — via "Install Extension" (recomendada)
+1. No SillyTavern, abra **Extensões → Instalar extensão** e cole
+   `https://github.com/gplobato3/Stfork`.
+2. Recarregue a página. Requer SillyTavern 1.13 ou mais recente (testado no 1.19).
+3. Opcional: em **Extensões → Grande Estratégia**, clique em **Importar personagem "Conselho de
+   Guerra"**. É um personagem mestre de jogo que dá voz ao gabinete (Defesa, Relações
+   Exteriores, Economia, Inteligência, Interior). A extensão funciona com qualquer personagem;
+   este só foi escrito para o jogo.
 
-1. No SillyTavern, abra **Extensions → Install Extension**.
-2. Cole a URL do repositório:
-   [`https://github.com/gplobato3/Stfork`](https://github.com/gplobato3/Stfork)
-3. Ative a extensão em **Manage Extensions**.
+Não há `npm install` para jogar: a extensão não tem dependências em tempo de execução.
 
-### Opção B — instalação manual
+## Como jogar
 
-Copie o conteúdo deste repositório para dentro do SillyTavern, em uma das pastas:
+1. Abra um chat com o personagem que quiser, com o seu preset de sempre.
+2. Abra o **menu da varinha → Grande Estratégia** (ou digite `/hoi`) e clique em
+   **Iniciar campanha**.
+3. Escolha o período, a nação e o nome do governante. Uma mensagem de abertura aparece no chat.
+4. Na Sala de Guerra: clique num país para ver o dossiê e as ações sobre ele; a aba **Governo**
+   tem as ações internas. Cada ação custa **Capital Político**, que se renova todo mês.
+5. Converse no chat como governante. Ordens viram ações; conversa normal continua conversa.
+6. Clique em **Avançar Mês** (na Sala de Guerra ou na barra acima do chat), leia o relatório e
+   tome a decisão do mês.
 
-- Por usuário: `data/<seu-handle>/extensions/Stfork/`
-- Para todos os usuários: `scripts/extensions/third-party/Stfork/`
+![Barra da campanha acima do chat](docs/screenshots/hud.webp)
 
-Depois, ative a extensão em **Manage Extensions**. Não é necessário
-`npm install`.
+### Comandos de barra
 
-> A extensão espera viver em `scripts/extensions/third-party/Stfork/`
-> (o nome da pasta `Stfork` casa com `EXTENSION_DIR` no código).
+| Comando | Faz |
+|---|---|
+| `/hoi` | Abre a Sala de Guerra |
+| `/hoi-novojogo` | Nova campanha |
+| `/hoi-turno` | Avança um mês |
+| `/hoi-ordem <texto>` | Interpreta e executa uma ordem |
+| `/hoi-acao acao=<id> alvo=<ID>` | Executa uma ação do catálogo (ex.: `acao=dip_send_aid alvo=ARG`) |
+| `/hoi-decisao` | Reabre a decisão pendente |
+| `/hoi-status` | Retorna o relatório de situação (útil em STscript) |
+| `/hoi-salvar`, `/hoi-apagar` | Salva / apaga a campanha deste chat |
 
-## Como começar um jogo
+Os comandos também aceitam nomes em inglês (`/hoi-newgame`, `/hoi-endturn`, `/hoi-order`...).
 
-1. Abra (ou crie) um chat no SillyTavern com o seu preset e personagem de
-   preferência já carregados.
-2. Inicie uma campanha de uma destas formas:
-   - clique em **Novo Jogo** no painel do HOI, ou
-   - digite **`/hoi-newgame`** no chat.
-3. Escolha a sua nação no seletor. Você passa a ser o chefe de Estado dela
-   (o título — Rei, Presidente, Chanceler... — é inferido do tipo de governo).
-4. O painel mostra o mapa e a Sala de Guerra com os seus recursos.
+### Macros para presets
 
-Cada chat guarda **uma** campanha. Trocar de chat carrega/limpa a campanha
-daquele chat automaticamente.
+Se você prefere controlar onde o contexto do jogo entra no prompt, desligue a injeção automática
+nas configurações e use as macros no seu preset ou no card: `{{hoi_sitrep}}`, `{{hoi_nation}}`,
+`{{hoi_leader}}`, `{{hoi_title}}`, `{{hoi_date}}`, `{{hoi_defcon}}`, `{{hoi_orders}}`.
 
-## Como funcionam os turnos, eventos e decisões
+## Integração com o seu preset
 
-1. Você clica em **Avançar Turno** (ou digita **`/hoi-endturn`**).
-2. O motor aplica a **manutenção** determinística do turno: o calendário avança
-   um mês, recursos sofrem pequenas variações, crises evoluem ou expiram, e a
-   tensão global sobe ou decai conforme o cenário.
-3. A IA gera o **evento do turno** (um `GameEvent` com narrativa em pt-BR e de
-   2 a 4 **opções**). A saída é validada contra um JSON Schema; se vier
-   inválida, há uma nova tentativa e, por fim, um evento local de contingência.
-4. Você escolhe uma opção. Os **efeitos** dela (ajustes de recursos, relações,
-   tensão, crises, guerra, etc.) são aplicados e o estado é **salvo na hora**.
-5. Opcionalmente, uma **narração imersiva** é adicionada ao chat, na voz do seu
-   personagem/preset.
-6. A cada turno o jogo verifica condições de **fim de jogo** (ex.: tensão global
-   no limite = guerra nuclear; estabilidade da sua nação zerada = colapso).
+- O relatório de situação entra pelo mesmo mecanismo do Author's Note e do Summarize
+  (`setExtensionPrompt`), como mensagem de **sistema**, por padrão na profundidade 1. Posição,
+  profundidade, papel e nível de detalhe são configuráveis. Nada do seu preset é substituído.
+- Eventos e o árbitro de ordens usam saída estruturada (JSON Schema) quando a API é de Chat
+  Completion. Em Text Completion o formato vai no próprio prompt e a resposta é lida com
+  tolerância a erros. Se a resposta não servir, há uma nova tentativa e, por fim, um evento
+  local, então o jogo nunca trava.
+- Os boletins usam a geração "quiet" do SillyTavern, então saem na voz do seu preset.
+- Em **Configurações → Perfil de conexão do motor** você pode apontar eventos e árbitro para
+  outro perfil do Connection Manager (por exemplo, um modelo mais barato), mantendo o chat no
+  seu modelo principal.
 
-## Integração com o seu Preset / Personagem
+## Configurações
 
-A extensão **não** substitui o seu fluxo normal do SillyTavern. Ela registra um
-**generate interceptor** (`hoiGenerateInterceptor`, declarado no
-`manifest.json`). Antes de cada geração não-dry-run, o interceptor:
+Ficam em **Extensões → Grande Estratégia**: injeção do relatório (posição, profundidade, papel,
+detalhe), modo de ordens (automático, só por comando, desligado), eventos por IA, boletins no
+chat, perfil de conexão do motor, limite de tokens dos eventos, barra no chat, ilustrações e
+dificuldade das novas campanhas.
 
-- verifica se há uma **campanha ativa** neste chat;
-- monta um **relatório de situação** compacto (nação, recursos, tensão, crises e
-  relações-chave) dimensionado ao tamanho do contexto; e
-- insere esse relatório como **nota de sistema** imediatamente antes da sua
-  última mensagem.
+O modo automático de ordens faz uma chamada extra ao modelo a cada mensagem sua enquanto houver
+campanha. Se isso pesar no custo ou na latência, use o modo "só por comando" (`/hoi-ordem`).
 
-Isso é **idempotente** (nunca injeta duas vezes), **ciente do tipo de geração**
-(não injeta em `impersonate`/`continue`/`quiet`) e **nunca lança exceção** — uma
-falha ali jamais bloqueia a sua geração. O seu preset, personagem e histórico
-continuam valendo normalmente; o relatório é apenas **contexto adicional**.
+## Mais telas
 
-## Referência de comandos de barra
-
-| Comando | Apelidos | O que faz |
-|---|---|---|
-| `/hoi` | — | Abre o painel do HOI — Grande Estratégia. |
-| `/hoi-newgame` | `/hoi-novojogo` | Inicia um novo jogo (abre o seletor de nação). |
-| `/hoi-endturn` | `/hoi-turno` | Avança um turno: manutenção + evento + decisões. |
-| `/hoi-map` | `/hoi-mapa` | Abre o painel exibindo o mapa mundial. |
-| `/hoi-status` | `/hoi-situacao` | Imprime o relatório de situação no chat. |
-| `/hoi-save` | `/hoi-salvar` | Salva a campanha atual nos metadados deste chat. |
-| `/hoi-load` | `/hoi-carregar` | Carrega a campanha salva para este chat. |
-
-## Como jogar (passo a passo)
-
-1. **`/hoi-newgame`** → escolha, por exemplo, o **Brasil**. Você vira o(a)
-   Presidente e vê os recursos iniciais no painel.
-2. Leia o **mapa** e a **Sala de Guerra**. Observe a **Tensão Global** no topo.
-3. **`/hoi-endturn`** → surge um evento, p.ex. *"Incidente no Atlântico Sul"*,
-   com opções como *"Enviar nota diplomática"* ou *"Mobilizar a frota"*.
-4. Escolha. Os efeitos são aplicados (ex.: Influência +5, ou Tensão +8) e a
-   campanha é salva. Se quiser, uma narração imersiva aparece no chat.
-5. Repita **`/hoi-endturn`** para avançar os meses. Gerencie recursos e relações
-   para manter a estabilidade e evitar a escalada nuclear.
-6. A qualquer momento, **`/hoi-status`** imprime um resumo da situação no chat,
-   e **`/hoi-save`** / **`/hoi-load`** controlam o salvamento.
-
-## Geração de imagens (pós-v1)
-
-A geração de imagens (via Replicate) está **adiada** para depois da v1. Quando
-for implementada, a chave/token do Replicate será lida **somente** de uma
-**variável de ambiente** fornecida por você em tempo de execução — **nenhum
-token é embutido no código** nem versionado neste repositório. Você usará o seu
-próprio token e os seus próprios créditos.
-
-## Compatibilidade
-
-- Requer uma versão recente do SillyTavern (veja `minimum_client_version` em
-  `manifest.json`).
-- Funciona com o seu **preset** e **personagem** já carregados: a extensão apenas
-  injeta um relatório de situação como contexto adicional.
+| | |
+|---|---|
+| ![Escolha do período](docs/screenshots/wizard.webp) | ![Escolha da nação](docs/screenshots/wizard-nation.webp) |
+| ![Ordem no chat](docs/screenshots/chat-order.webp) | ![Relatório do mês](docs/screenshots/turn-report.webp) |
+| ![Dossiê e ações](docs/screenshots/dossier.webp) | ![Celular](docs/screenshots/mobile.webp) |
 
 ## Desenvolvimento
 
 ```sh
-cd Stfork
-node tools/check.mjs   # verifica sintaxe JS + todos os JSON + fixtures do contrato
-node --test            # testes unitários (node:test)
+npm install          # só ferramentas de desenvolvimento (mapa, bandeiras)
+npm run check        # sintaxe, JSON, import em node e dados do cenário
+npm test             # 300 testes (node:test)
+npm run build:map    # regenera assets/map/world.map.json
+npm run build:flags  # regenera assets/flags/
+REPLICATE_API_TOKEN=... npm run build:art   # regenera as ilustrações (o token nunca é gravado)
 ```
 
-A arquitetura e os contratos entre módulos estão documentados em
-[`MODULE_CONTRACT.md`](./MODULE_CONTRACT.md).
+Arquitetura e contratos entre módulos: [`docs/DESIGN.md`](docs/DESIGN.md). O que estava errado
+na v1: [`docs/AUDIT.md`](docs/AUDIT.md).
 
-## Licença
+## Créditos e licença
 
-Este projeto é licenciado sob a **GNU Affero General Public License v3.0 ou
-posterior (AGPL-3.0-or-later)**. Veja o arquivo [`LICENSE`](./LICENSE) para o
-texto completo. Ao distribuir ou disponibilizar este software (inclusive via
-rede), você deve manter o código-fonte correspondente disponível sob a mesma
-licença.
+- Mapa: Natural Earth (domínio público). Bandeiras: [flag-icons](https://github.com/lipis/flag-icons)
+  (MIT, ver `assets/flags/LICENSE-flags.md`). Ilustrações geradas com FLUX.2 [pro] via Replicate.
+- Os cenários de 2028 e 2031 são ficção. Nenhum líder real é citado pelo nome.
+- Licença: AGPL-3.0-or-later ([`LICENSE`](LICENSE)).

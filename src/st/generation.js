@@ -147,13 +147,25 @@ export async function generateStructuredWith(ctx, settings, req) {
                 { role: 'user', content: prompt },
             ];
             const overridePayload = isChat && wrapper ? { json_schema: wrapper } : {};
-            const response = await svc.sendRequest(
-                profile.id,
-                messages,
-                maxTokens,
-                { stream: false, extractData: true, includePreset: true, includeInstruct: true },
-                overridePayload,
-            );
+            // generateRaw aborts on GENERATION_STOPPED (script.js:4013-4018); give the
+            // Connection Manager path the same Stop behaviour (shared.js:424 custom.signal).
+            const abort = typeof AbortController === 'function' ? new AbortController() : null;
+            const source = ctx.eventSource;
+            const stopType = (ctx.eventTypes || ctx.event_types || {}).GENERATION_STOPPED;
+            const onStop = () => abort && abort.abort(new Error('Geração interrompida.'));
+            if (abort && source && stopType && typeof source.on === 'function') source.on(stopType, onStop);
+            let response;
+            try {
+                response = await svc.sendRequest(
+                    profile.id,
+                    messages,
+                    maxTokens,
+                    { stream: false, signal: abort ? abort.signal : null, extractData: true, includePreset: true, includeInstruct: true },
+                    overridePayload,
+                );
+            } finally {
+                if (abort && source && stopType && typeof source.removeListener === 'function') source.removeListener(stopType, onStop);
+            }
             const content = response && typeof response === 'object' && 'content' in response ? response.content : response;
             return interpret(content, { prefilled: false });
         }

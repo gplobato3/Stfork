@@ -71,6 +71,9 @@
  * @property {Record<string, MapCountry>} countries
  * @property {string} graticule          SVG path "d" for the 30° graticule.
  * @property {string} outline            SVG path "d" for the globe outline (sphere).
+ * @property {Array<{id:string, d:string}>} [decor]   Non-interactive land (Antarctica).
+ * @property {Record<string, string>} [territories]   Dependencies folded into their sovereign ('GRL' -> 'DNK').
+ * @property {string} [source]           Attribution.
  *
  * @typedef {Object} MapCountry
  * @property {string} id
@@ -78,7 +81,8 @@
  * @property {[number, number]} label    Label anchor (pole of inaccessibility / largest polygon centroid).
  * @property {[number, number]} capital  Capital marker position (approximate is fine).
  * @property {number} area               Projected area (for label sizing / visibility).
- * @property {[number, number, number, number]} bbox  [minX, minY, maxX, maxY]
+ * @property {[number, number, number, number]} bbox  [minX, minY, maxX, maxY] of the home territory (zoom target)
+ * @property {[number, number, number, number]} [fullBbox] Extent of every polygon (overseas parts included).
  * @property {string[]} neighbors
  */
 
@@ -139,7 +143,7 @@
  * @property {(state: WorldState, ctx: {report: TurnReport, decision?: {eventTitle:string, optionLabel:string}}) => Promise<string>} writeBulletin
  *           Short pt-BR news bulletin for the chat (uses generateQuietPrompt so the user's preset voice applies).
  *           '' on failure.
- * @property {(state: WorldState, opts?: {budgetTokens?: number}) => string} buildSitrep
+ * @property {(state: WorldState, opts?: {budgetTokens?: number, detail?: 'compact'|'full'}) => string} buildSitrep
  *           Deterministic pt-BR situation report used by the prompt injection and macros.
  */
 
@@ -147,23 +151,34 @@
 
 /**
  * The ONLY module allowed to touch SillyTavern APIs (plus src/core/stContext.js).
- * deps: { getState: () => ?WorldState, buildSitrep: (state, opts) => string, onUserOrder?: (text) => Promise<string[]> }
+ * deps: { getState: () => ?WorldState, buildSitrep: (state, opts) => string,
+ *         onUserOrder?: (text) => Promise<string[]>, getCatalog?: () => ActionDef[] }
+ * onUserOrder runs INSIDE the generate interceptor: it may save state and toast, but must
+ * not post chat messages or await dialogs.
+ *
+ * Writes (saveCampaign, clearCampaign, postNarrator, order-key stamps) are bound to the chat
+ * read by the last loadCampaign()/bindCurrentChat() and refused (resolve false) while
+ * SillyTavern is loading or reloading a chat: ST replaces chat_metadata and empties `chat`
+ * before it emits CHAT_CHANGED.
  *
  * @typedef {Object} StAPI
  * @property {() => boolean} isLive
  * @property {() => HoiSettings} getSettings
  * @property {(patch: Partial<HoiSettings>) => HoiSettings} updateSettings
- * @property {() => ?WorldState} loadCampaign            Reads ctx.chatMetadata[MODULE_KEY] (raw; caller migrates).
- * @property {(state: WorldState) => Promise<void>} saveCampaign
- * @property {() => Promise<void>} clearCampaign
+ * @property {() => ?WorldState} loadCampaign            Reads ctx.chatMetadata[MODULE_KEY] (raw; caller migrates) and binds writes to this chat.
+ * @property {() => void} bindCurrentChat
+ * @property {(state: WorldState) => Promise<boolean>} saveCampaign   false = refused (chat loading / other chat).
+ * @property {() => Promise<boolean>} clearCampaign
  * @property {() => string|null} currentChatId
  * @property {(state: ?WorldState) => void} refreshInjection   setExtensionPrompt (or clears it when state is null / disabled).
  * @property {() => void} installInterceptor                  Defines globalThis[INTERCEPTOR_NAME].
  * @property {() => void} registerMacros
  * @property {(controller: ControllerAPI) => void} registerCommands
- * @property {(text: string, opts?: {name?: string}) => Promise<void>} postNarrator   Narrator-type chat message.
- * @property {(opts: {systemPrompt: string, prompt: string, schemaName: string, schema: object, maxTokens?: number}) => Promise<{ok: boolean, value?: any, raw?: string, error?: string}>} generateStructured
- *           Correct ST structured output: jsonSchema = {name, description, strict:false, value, returnInvalid:true}.
+ * @property {(text: string, opts?: {name?: string}) => Promise<boolean>} postNarrator   Narrator-type chat message (false = refused).
+ * @property {(opts: {systemPrompt: string, prompt: string, schemaName: string, schema: ?object, maxTokens?: number}) => Promise<{ok: boolean, value?: any, raw?: string, error?: string}>} generateStructured
+ *           ST structured output: jsonSchema = {name, description, strict:false, value, returnInvalid:true}, sent ONLY on
+ *           Chat Completion (ST's extractJsonFromData returns '{}' for Text Completion APIs); Text Completion uses the
+ *           prompt + a '{' prefill. schema null = prompt-only (repair retry).
  *           Uses settings.engineProfileId via ConnectionManagerRequestService when set, else ctx.generateRaw.
  * @property {(quietPrompt: string) => Promise<string>} generateQuiet
  * @property {(n: number) => string} recentChatText          Last n non-system messages as "Nome: texto" (truncated).
@@ -239,8 +254,11 @@
  * @property {() => Promise<void>} endTurn                   engine.endTurn -> LLM event -> save -> report -> bulletin -> show decision.
  * @property {() => Promise<void>} openPendingEvent
  * @property {(text: string, source?: 'chat'|'warroom'|'command') => Promise<ActionResult[]>} handleOrder
+ *           Actions with confirm:true never run from 'chat'; 'warroom'/'command' ask first.
+ * @property {(text: string) => Promise<string[]>} handleChatOrder   StAPI onUserOrder adapter.
+ * @property {() => void} afterGeneration          GENERATION_ENDED/STOPPED: shows an ending deferred by a chat order.
  * @property {() => Promise<void>} save
- * @property {() => Promise<void>} reset
+ * @property {(opts?: {confirmed?: boolean}) => Promise<void>} reset
  * @property {() => Promise<void>} onChatChanged
  * @property {() => ?WorldState} getState
  * @property {() => string} statusText                       pt-BR sitrep for /hoi-status.

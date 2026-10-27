@@ -165,7 +165,14 @@ import { BOUNDS, PHASES, SCHEMA_VERSION } from './constants.js';
  * @property {NewsItem[]} news
  * @property {LogEntry[]} log
  * @property {?{kind:'victory'|'defeat', reason:string, turn:number}} outcome
- * @property {Record<string, any>} flags
+ * @property {Record<string, any>} flags      Free-form; keys starting with '_' are engine-reserved,
+ *                                            'stOrderKeys'/'stLastOrderKey' are written by StAPI (order dedupe).
+ * @property {Record<string, string[]>} neighbors  Copied from ScenarioData by newGame (endTurn has no scenario access).
+ * @property {Object} engine                  Opaque engine bookkeeping (id counter, baselines, coup counter...). Do not touch.
+ *
+ * `player` also carries `difficulty: 'facil'|'normal'|'dificil'` (PC income bonus survives reloads).
+ * War may carry engine-only fields: `called`, `ceasefireTurn`, `lastOfferTurn`, `lastSurrenderTurn`,
+ * and `startedDate` ({year, month}) for wars that predate the campaign (startedTurn 0).
  */
 
 /** Order-independent relation key: relationKey('USA','RUS') === 'RUS|USA'. */

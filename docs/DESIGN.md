@@ -56,7 +56,8 @@ Rules for module agents:
 - Only create/edit files you own. If you need a contract change, write the request in
   `docs/contract-requests/<module>.md` and work around it locally.
 - Do not commit, do not push, do not touch git state. The orchestrator commits.
-- Run only your own tests: `node --test test/<module>/`. Other agents are writing files at
+- Run only your own tests: `node --test "test/<module>/*.test.js"` (Node ≥ 21 no longer
+  expands a directory argument; `npm test` runs everything). Other agents are writing files at
   the same time; their half-written code is not your problem.
 - No runtime npm dependencies. The extension ships as plain ES modules. Dev-only tooling
   (map build) may use npm packages; only SCENARIO may edit `package.json` devDependencies.
@@ -205,9 +206,10 @@ From `/projects/sandbox/.st-ref` (1.19.0):
   execute orders twice — they reuse the last results in the sitrep.
 - **Structured output**: `generateRaw({ systemPrompt, prompt, prefill, responseLength,
   jsonSchema })` where `jsonSchema = { name, description, strict:false, value: <schema>,
-  returnInvalid:true }` (`script.js:4261`). With `jsonSchema` the return value is a JSON
-  string (already extracted). For Text Completion backends the schema is not enforced:
-  the prompt itself must describe the JSON format. Always parse defensively, one repair
+  returnInvalid:true }` (`script.js:4261`). Send `jsonSchema` ONLY on Chat Completion: for
+  every Text Completion API, `extractJsonFromData` returns `'{}'` and discards the model
+  output (`script.js:6311-6365`). Text Completion uses the prompt (which describes the JSON
+  format) plus a `'{'` prefill. Always parse defensively, one repair
   retry, then fallback. Keep schemas to the portable subset (type, properties, required,
   enum, items, description — no oneOf/anyOf/additionalProperties/min/max constraints).
 - **Optional engine connection profile**: `ConnectionManagerRequestService.sendRequest(
@@ -307,7 +309,7 @@ Exact exports (UI-A imports them):
   dismissible })` → `Promise<number | null>`. Art header `art/event-<category>.webp`,
   category chip, date, title, narrative, headlines, options as large buttons with
   rationale and effect preview chips; "Decidir depois" when dismissible (resolves null).
-- `src/ui/dialogs/effectPreview.js`: `describeEffect(effect, state)` →
+- `src/ui/dialogs/effectPreview.js`: `describeEffect(effect, state, ctx?)` (ctx = `{actorId, targetId}`) →
   `{ text, tone:'good'|'bad'|'neutral', icon }` (pure, pt-BR; resolves nation names and
   PLACEHOLDERS). UI-A uses it for action previews too.
 - `src/ui/dialogs/gameOver.js`: `openGameOver({ outcome, state, ranking, assetUrl })` →
@@ -343,3 +345,24 @@ refreshes injection/HUD.
 `assets/art/*.webp`, 16:9, ~1280×720: `title`, `bookmark-b2026`, `bookmark-b2028`,
 `bookmark-b2031`, `event-<category>` for every `EVENT_CATEGORIES` entry, `victory`, `defeat`.
 UI must cope with a missing image (hide the art block).
+
+## 9. Safety rules added after review (v2.0.0)
+
+- **Chat binding for writes.** SillyTavern replaces `chat_metadata` with `{}` and empties
+  `chat` at the start of a chat switch or reload, and emits `CHAT_CHANGED` only at the end
+  (`script.js:875-900`, `:7744-7748`, `:7657`, `:7700`). StAPI binds writes to the chat read
+  by `loadCampaign()` and refuses them while the chat id, the integrity slug or the message
+  list say the chat is loading. The controller also checks the chat id before committing,
+  retries a refused save when the same chat finishes reloading, and drops the write when the
+  chat changed.
+- **Busy lock with an owner token.** Only the flow that took the lock can release it; a chat
+  switch revokes ownership.
+- **Irreversible actions need a dialog.** `confirm: true` actions (war, limited strike,
+  nuclear strike) never run from chat orders; War Room orders and slash commands ask first.
+- **Nothing blocking inside the interceptor.** Chat orders may save and toast. A game over
+  caused by a chat order is shown after `GENERATION_ENDED`/`GENERATION_STOPPED`.
+- **Macro neutralizing** breaks every adjacent brace pair (`{{{x}}}` included) in text that
+  goes into `generateRaw`.
+- Order dedupe keeps the last 64 processed message keys per campaign.
+- The contract requests in `docs/contract-requests/` are resolved: the typedefs in
+  `src/contract/` now document every extra field the modules write.

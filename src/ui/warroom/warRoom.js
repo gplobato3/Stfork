@@ -49,6 +49,7 @@ export function createWarRoom(deps) {
     let mapMode = 'political';
     let mapState = 'idle'; // idle | loading | ready | error
     let lastReport = null;
+    let lastReportCampaign = null;
     let reportShownTurn = null;
     let restoreFocus = null;
     let rankingCache = null;
@@ -238,7 +239,7 @@ export function createWarRoom(deps) {
             requestAnimationFrame(() => root.classList.add('is-open'));
         }
         refreshNow();
-        if (lastReport && st && lastReport.turn === st.turn && reportShownTurn !== lastReport.turn) {
+        if (reportFor(st) && reportShownTurn !== lastReport.turn) {
             reportShownTurn = lastReport.turn;
             report.show(turnReportModel(lastReport, st));
         }
@@ -289,8 +290,13 @@ export function createWarRoom(deps) {
 
     function currentDeltas(state) {
         if (!state) return null;
-        if (lastReport && lastReport.turn === state.turn && lastReport.playerDeltas) return lastReport.playerDeltas;
+        if (reportFor(state) && lastReport.playerDeltas) return lastReport.playerDeltas;
         return track.turn === state.turn ? track.deltas : null;
+    }
+
+    /** The last report belongs to this campaign and month (reports survive chat switches). */
+    function reportFor(state) {
+        return !!(lastReport && state && lastReportCampaign === state.campaignId && lastReport.turn === state.turn);
     }
 
     function refresh() {
@@ -438,6 +444,7 @@ export function createWarRoom(deps) {
         if (!rep) return;
         lastReport = rep;
         const state = ctx.getState();
+        lastReportCampaign = state ? state.campaignId : null;
         trackState(state);
         if (!isOpen || !built) return;
         reportShownTurn = rep.turn;

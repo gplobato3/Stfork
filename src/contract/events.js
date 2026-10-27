@@ -73,6 +73,10 @@
  * @property {string[]} [involved]   Nation ids (map highlight).
  * @property {Option[]} options      OPTION_COUNT.MIN..MAX
  * @property {number} turn           Turn the event was generated for.
+ * @property {number} [defaultOption] source 'engine' only: applied when the decision is left
+ *                                   unanswered for 6 turns.
+ *
+ * Peace terms in a `war` effect: `target` is the side imposing the terms, `targetB` accepts them.
  */
 
 /**

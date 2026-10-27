@@ -27,6 +27,9 @@ export const SYSTEM_AVATAR = 'img/five.png';
 export const NARRATOR_TYPE = 'narrator';
 /** Campaign flag holding the key of the last chat message whose orders ran. */
 export const ORDER_KEY_FLAG = 'stLastOrderKey';
+/** Campaign flag holding the keys of the last MAX_ORDER_KEYS processed messages. */
+export const ORDER_KEYS_FLAG = 'stOrderKeys';
+export const MAX_ORDER_KEYS = 64;
 export const COUNCIL_CHARACTER_PATH = 'assets/character/conselho.json';
 export const COUNCIL_CHARACTER_NAME = 'Conselho de Guerra';
 
@@ -64,8 +67,18 @@ export function createSt(deps) {
 
     /** Used when ST is not available (node / early load). */
     let memorySettings = normalizeSettings(null);
-    /** chatId -> last processed message key */
+    /** chatId -> keys of processed order messages (bounded, oldest first) */
     const processedKeys = new Map();
+    /**
+     * The chat the campaign was loaded from. ST replaces `chat_metadata` with `{}` and
+     * empties `chat` at the START of a chat switch/reload and only emits CHAT_CHANGED
+     * at the end (ST: public/script.js:875-900, :7744-7748 -> getChat :7657 -> :7700).
+     * A save in that window would write this campaign into the other chat's file,
+     * and the server skips the integrity check when the payload has no slug
+     * (src/endpoints/chats.js:536-538). Every write is checked against this binding.
+     * @type {?{chatId: string, integrity: ?string, hadMessages: boolean}}
+     */
+    let binding = null;
     /** Last sitrep budget computed from the interceptor's contextSize. */
     let lastBudget = null;
     /** @type {Array<[string, Function]>} */
@@ -123,34 +136,105 @@ export function createSt(deps) {
         return id === undefined || id === null || id === '' ? null : String(id);
     }
 
-    function loadCampaign() {
+    function readCampaignRaw() {
         const ctx = getContext();
         const raw = ctx?.chatMetadata?.[MODULE_KEY];
         return raw && typeof raw === 'object' ? raw : null;
     }
 
-    function stamp(state, key) {
-        if (!key || state?.flags?.[ORDER_KEY_FLAG] === key) return { ...state };
-        return { ...state, flags: { ...(state.flags || {}), [ORDER_KEY_FLAG]: key } };
+    /** Remember the chat that is loaded right now; writes are only allowed into it. */
+    function bindCurrentChat() {
+        const ctx = getContext();
+        const chatId = currentChatId();
+        binding = chatId
+            ? {
+                chatId,
+                integrity: ctx?.chatMetadata?.integrity ?? null,
+                hadMessages: Array.isArray(ctx?.chat) && ctx.chat.length > 0,
+            }
+            : null;
     }
 
+    /** Reads the campaign of the current chat and binds writes to that chat. */
+    function loadCampaign() {
+        bindCurrentChat();
+        return readCampaignRaw();
+    }
+
+    /**
+     * Null when writing into the current chat is safe, else the reason it is not.
+     * @returns {?('no-context'|'no-chat'|'chat-changed'|'loading')}
+     */
+    function writeBlocker() {
+        const ctx = getContext();
+        if (!ctx?.chatMetadata) return 'no-context';
+        const chatId = currentChatId();
+        if (!chatId) return 'no-chat';
+        if (!binding || binding.chatId !== chatId) return 'chat-changed';
+        // ST sets an integrity slug on every loaded chat (script.js:7665); the fresh `{}`
+        // used while a chat is loading has none.
+        const integrity = ctx.chatMetadata.integrity ?? null;
+        if (binding.integrity && integrity !== binding.integrity) return 'loading';
+        if (!binding.integrity && integrity) binding.integrity = integrity;
+        const length = Array.isArray(ctx.chat) ? ctx.chat.length : 0;
+        // reloadCurrentChat keeps chat_metadata but empties `chat` while it reloads.
+        if (length === 0 && binding.hadMessages) return 'loading';
+        if (length > 0) binding.hadMessages = true;
+        return null;
+    }
+
+    function orderKeysOf(obj) {
+        const flags = obj && obj.flags ? obj.flags : {};
+        const list = Array.isArray(flags[ORDER_KEYS_FLAG]) ? flags[ORDER_KEYS_FLAG].filter((k) => typeof k === 'string') : [];
+        if (typeof flags[ORDER_KEY_FLAG] === 'string' && !list.includes(flags[ORDER_KEY_FLAG])) list.push(flags[ORDER_KEY_FLAG]);
+        return list;
+    }
+
+    function memoryKeys() {
+        const id = currentChatId() ?? '';
+        let list = processedKeys.get(id);
+        if (!list) processedKeys.set(id, (list = []));
+        return list;
+    }
+
+    function rememberKey(list, key) {
+        if (!list.includes(key)) list.push(key);
+        while (list.length > MAX_ORDER_KEYS) list.shift();
+    }
+
+    /** Copy of `state` whose flags carry every processed order key (bounded). */
+    function stamp(state) {
+        const keys = orderKeysOf(state);
+        for (const k of memoryKeys()) rememberKey(keys, k);
+        if (!keys.length) return { ...state };
+        return { ...state, flags: { ...(state.flags || {}), [ORDER_KEYS_FLAG]: keys, [ORDER_KEY_FLAG]: keys[keys.length - 1] } };
+    }
+
+    /** @returns {Promise<boolean>} false when the write was refused (see writeBlocker). */
     async function saveCampaign(state) {
         const ctx = getContext();
-        if (!ctx?.chatMetadata || !state || typeof state !== 'object') return;
-        const key = processedKeys.get(currentChatId() ?? '');
-        ctx.chatMetadata[MODULE_KEY] = stamp(state, key);
+        if (!ctx?.chatMetadata || !state || typeof state !== 'object') return false;
+        const blocker = writeBlocker();
+        if (blocker) {
+            console.warn(`[HOI] campaign not saved: ${blocker}`);
+            return false;
+        }
+        ctx.chatMetadata[MODULE_KEY] = stamp(state);
         // ST: public/script.js:9408 saveMetadata -> saveChatConditional
         if (typeof ctx.saveMetadata === 'function') await ctx.saveMetadata();
+        return true;
     }
 
     async function clearCampaign() {
         const ctx = getContext();
+        if (writeBlocker()) return false;
         processedKeys.delete(currentChatId() ?? '');
         if (ctx?.chatMetadata && MODULE_KEY in ctx.chatMetadata) {
             delete ctx.chatMetadata[MODULE_KEY];
         }
         refreshInjection(null);
         if (typeof ctx?.saveMetadata === 'function') await ctx.saveMetadata();
+        return true;
     }
 
     /* --------------------------------------------------------- injection */
@@ -188,17 +272,17 @@ export function createSt(deps) {
     /* -------------------------------------------------------- interceptor */
 
     function isProcessed(key, state) {
-        if (processedKeys.get(currentChatId() ?? '') === key) return true;
-        if (state?.flags?.[ORDER_KEY_FLAG] === key) return true;
-        return loadCampaign()?.flags?.[ORDER_KEY_FLAG] === key;
+        if (memoryKeys().includes(key)) return true;
+        if (orderKeysOf(state).includes(key)) return true;
+        return orderKeysOf(readCampaignRaw()).includes(key);
     }
 
     function markProcessed(key) {
-        processedKeys.set(currentChatId() ?? '', key);
+        rememberKey(memoryKeys(), key);
         const ctx = getContext();
         const stored = ctx?.chatMetadata?.[MODULE_KEY];
-        if (!stored || typeof stored !== 'object') return;
-        ctx.chatMetadata[MODULE_KEY] = stamp(stored, key);
+        if (!stored || typeof stored !== 'object' || writeBlocker()) return;
+        ctx.chatMetadata[MODULE_KEY] = stamp(stored);
         // ST: public/scripts/extensions.js:89 saveMetadataDebounced (cancelled on chat change)
         if (typeof ctx.saveMetadataDebounced === 'function') ctx.saveMetadataDebounced();
         else if (typeof ctx.saveMetadata === 'function') ctx.saveMetadata().catch(() => {});
@@ -258,7 +342,12 @@ export function createSt(deps) {
     async function postNarrator(text, opts = {}) {
         const ctx = getContext();
         const body = String(text ?? '').trim();
-        if (!ctx || !Array.isArray(ctx.chat) || !body) return;
+        if (!ctx || !Array.isArray(ctx.chat) || !body) return false;
+        const blocker = writeBlocker();
+        if (blocker) {
+            console.warn(`[HOI] narrator message not posted: ${blocker}`);
+            return false;
+        }
         // Same shape as /sys (ST: public/scripts/slash-commands.js:6020-6043 sendNarratorMessage).
         // The text is NOT passed through substituteParams: it is LLM output and must
         // not be able to run macros such as {{setvar}}.
@@ -288,6 +377,7 @@ export function createSt(deps) {
         if (ctx.eventSource && types.USER_MESSAGE_RENDERED) await ctx.eventSource.emit(types.USER_MESSAGE_RENDERED, id);
         // ctx.saveChat is saveChatConditional (st-context.js), group-safe.
         if (typeof ctx.saveChat === 'function') await ctx.saveChat();
+        return true;
     }
 
     function recentChatText(n) {
@@ -418,6 +508,7 @@ export function createSt(deps) {
         saveCampaign,
         clearCampaign,
         currentChatId,
+        bindCurrentChat,
         refreshInjection,
         installInterceptor,
         registerMacros,

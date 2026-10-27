@@ -36,7 +36,7 @@ const st = createSt({
 });
 const llm = createLlm({ st, engine });
 
-controller = createController({ engine, scenario, llm, st, getUi: () => ui });
+controller = createController({ engine, scenario, llm, st, getUi: () => ui, closeDialogs: closeAllModals });
 
 ui = createUi({
     scenario,
@@ -47,7 +47,8 @@ ui = createUi({
         onOrder: (text) => void controller.handleOrder(text, 'warroom'),
         onOpenEvent: () => void controller.openPendingEvent(),
         onSave: () => void controller.save(),
-        onResetCampaign: () => void controller.reset(),
+        // Both UI callers (settings drawer, War Room menu) confirm before calling this.
+        onResetCampaign: () => void controller.reset({ confirmed: true }),
         onSettingsChange: (patch) => {
             st.updateSettings(patch);
             ui.refresh();
@@ -90,11 +91,12 @@ export async function onActivate() {
         st.registerCommands(controller);
         st.registerMacros();
         const types = eventTypes();
-        if (types.CHAT_CHANGED) {
-            st.on(types.CHAT_CHANGED, () => {
-                closeAllModals();
-                void controller.onChatChanged();
-            });
+        // The controller closes open dialogs itself when the chat really changed
+        // (reloadCurrentChat also emits CHAT_CHANGED for the same chat).
+        if (types.CHAT_CHANGED) st.on(types.CHAT_CHANGED, () => void controller.onChatChanged());
+        // A chat order that ended the game is shown only after the reply is generated.
+        for (const type of [types.GENERATION_ENDED, types.GENERATION_STOPPED]) {
+            if (type) st.on(type, () => controller.afterGeneration());
         }
         // APP_READY auto-fires for listeners attached after the app is ready.
         if (types.APP_READY) st.on(types.APP_READY, () => void startUi());

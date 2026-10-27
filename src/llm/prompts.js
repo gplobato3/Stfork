@@ -22,7 +22,10 @@ import { playerNation, getRelation } from '../contract/worldState.js';
 
 /** Break macro syntax ({{...}}) so ST does not evaluate it inside our prompts. */
 export function neutralize(text) {
-    return String(text ?? '').replace(/\{\{/g, '{ {').replace(/\}\}/g, '} }');
+    // Break EVERY adjacent brace pair: replacing non-overlapping '{{' leaves one pair
+    // alive in runs of three ('{{{setvar::a::b}}}' -> '{ {{setvar…'), which ST's macro
+    // parser still executes inside substituteParams.
+    return String(text ?? '').replace(/\{(?=\{)/g, '{ ').replace(/\}(?=\})/g, '} ');
 }
 
 function oneLine(text, max = 200) {

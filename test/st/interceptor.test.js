@@ -38,6 +38,8 @@ function setup({ settings, onUserOrder, state = makeState() } = {}) {
             return ['ok'];
         }),
     });
+    // The controller always loads the campaign (which binds writes to this chat) first.
+    st.loadCampaign();
     st.installInterceptor();
     const run = (chat, type, contextSize = 8192) => globalThis[INTERCEPTOR_NAME](chat, contextSize, () => {}, type);
     return { ctx, st, orders, budgets, run, uninstall, setState: (s) => { current = s; } };
@@ -113,6 +115,7 @@ test('the processed key is persisted in the campaign and survives a reload (new 
         const orders2 = [];
         const stored = ctx.chatMetadata[MODULE_KEY];
         const st2 = createSt({ getState: () => stored, buildSitrep: () => 'S', onUserOrder: async (t) => { orders2.push(t); return []; } });
+        st2.loadCampaign();
         st2.installInterceptor();
         await globalThis[INTERCEPTOR_NAME](coreChat([msg]), 4096, () => {}, 'normal');
         assert.equal(orders2.length, 0);

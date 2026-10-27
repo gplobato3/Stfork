@@ -39,11 +39,8 @@ export function openGameMenu(ctx) {
             close();
             ctx.handlers.onSave();
         }) : null,
-        cmd('Nova campanha', 'fa-solid fa-flag', async () => {
-            if (ctx.hasCampaign) {
-                const ok = await ctx.confirm({ title: 'Nova campanha', text: 'Começar uma nova campanha neste chat? A campanha atual será substituída.', okLabel: 'Começar', danger: true });
-                if (!ok) return;
-            }
+        // The controller asks for confirmation when a campaign would be replaced.
+        cmd('Nova campanha', 'fa-solid fa-flag', () => {
             close();
             ctx.handlers.onNewCampaign();
         }),

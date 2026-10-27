@@ -10,6 +10,7 @@ function setup() {
     ctx.chat.push({ name: 'Gabriel', is_user: true, is_system: false, send_date: 'x', mes: 'oi', extra: {} });
     const uninstall = installFakeSillyTavern(ctx);
     const st = createSt({ getState: () => null, buildSitrep: () => '' });
+    st.loadCampaign(); // binds writes to the loaded chat, as the controller does on start
     return { ctx, st, uninstall };
 }
 
