@@ -42,7 +42,7 @@ as ordens que você dá no chat viram ações de verdade no jogo.
 
 1. No SillyTavern, abra **Extensões → Instalar extensão** e cole
    `https://github.com/gplobato3/Stfork`.
-2. Recarregue a página. Requer SillyTavern 1.13 ou mais recente (testado no 1.19).
+2. Recarregue a página. Requer SillyTavern 1.13 ou mais recente (testado no 1.16 e no 1.19).
 3. Opcional: em **Extensões → Grande Estratégia**, clique em **Importar personagem "Conselho de
    Guerra"**. É um personagem mestre de jogo que dá voz ao gabinete (Defesa, Relações
    Exteriores, Economia, Inteligência, Interior). A extensão funciona com qualquer personagem;

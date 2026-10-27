@@ -106,6 +106,12 @@ export async function onActivate() {
     }
 }
 
+// Boot from the module itself: SillyTavern calls manifest `hooks.activate` only since
+// 1.17.0 (callExtensionHook does not exist in 1.16 and older), so relying on it alone
+// leaves the extension silent there. onActivate is idempotent, so the hook call that
+// newer versions make afterwards is a no-op.
+if (st.isLive()) void onActivate();
+
 /** manifest hooks.disable */
 export async function onDisable() {
     try {
