@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>HOI — Sala de Guerra (preview UI-A)</title>
+    <!-- DEV ONLY. Serve /projects/sandbox with `python3 -m http.server 8765` and open
+         http://localhost:8765/Stfork/dev/ui-a/preview.html -->
+    <link rel="stylesheet" href="/.st-ref/public/webfonts/NotoSans/stylesheet.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/solid.min.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/brands.min.css">
+    <script>
+        // Load SillyTavern's own stylesheet (default) so global ST rules that could leak
+        // into the overlay are visible in the preview. ?st=0 disables it.
+        if (new URLSearchParams(location.search).get('st') !== '0') {
+            document.write('<link rel="stylesheet" href="/.st-ref/public/style.css">');
+        }
+    </script>
+    <link rel="stylesheet" href="../../style.css">
+    <style>
+        :root { --mainFontFamily: "Noto Sans", sans-serif; --mainFontSize: 15px; --SmartThemeBodyColor: #dcdcd2; --SmartThemeBlurTintColor: #171717; }
+        body { margin: 0; background: #1b1d1f; color: #ddd; font-family: "Noto Sans", sans-serif; }
+        #sheld { max-width: 820px; margin: 0 auto; padding: 12px; }
+        .fake-mes { padding: 10px 12px; margin: 8px 0; border-radius: 8px; background: rgba(255,255,255,0.05); }
+        /* ST keeps the wand menu hidden until the wand button is clicked. */
+        #extensionsMenu { display: none; position: fixed; left: 8px; bottom: 8px; background: #222; border: 1px solid #444; padding: 4px; border-radius: 6px; }
+        html.show-wand #extensionsMenu { display: block; z-index: 99999; }
+        #extensionsMenu .list-group-item { padding: 6px 10px; cursor: pointer; display: flex; gap: 6px; align-items: center; }
+        #extensions_settings2 { display: none; }
+    </style>
+</head>
+<body>
+    <div id="sheld">
+        <div id="chat">
+            <div class="fake-mes"><b>Conselho de Guerra:</b> Senhora Presidente, o gabinete aguarda suas ordens.</div>
+        </div>
+    </div>
+    <div id="extensionsMenu"></div>
+    <div id="extensions_settings2"></div>
+    <script>if (new URLSearchParams(location.search).get('wand') === '1') document.documentElement.classList.add('show-wand');</script>
+    <script type="module" src="./preview.js"></script>
+</body>
+</html>

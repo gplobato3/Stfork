@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>HOI — UI-B · prévia de diálogos e HUD</title>
+    <!-- Font Awesome bundled with SillyTavern (served from the read-only reference checkout). -->
+    <link rel="stylesheet" href="/.st-ref/public/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/solid.min.css">
+    <link rel="stylesheet" href="../../style.css">
+    <style>
+        /* Dev-only harness chrome (not shipped). Emulates SillyTavern's chat column. */
+        html, body { margin: 0; height: 100%; background: #171717; color: #dcdcd2; font: 14px/1.4 "Noto Sans", system-ui, sans-serif; }
+        body { display: grid; grid-template-columns: 280px 1fr; overflow: hidden; }
+        body.no-panel { grid-template-columns: 1fr; }
+        body.no-panel .dev-panel { display: none; }
+        .dev-panel { overflow: auto; padding: 14px; background: #0f0f0f; border-right: 1px solid #333; }
+        .dev-panel h1 { font-size: 14px; margin: 0 0 4px; }
+        .dev-panel h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #8a8a80; margin: 16px 0 6px; }
+        .dev-panel button { display: block; width: 100%; margin: 3px 0; padding: 6px 8px; text-align: left; background: #222; color: #ddd; border: 1px solid #3a3a3a; border-radius: 4px; cursor: pointer; font: inherit; font-size: 12.5px; }
+        .dev-panel button:hover { border-color: #c9a227; }
+        .dev-panel pre { white-space: pre-wrap; font-size: 11px; background: #000; padding: 8px; border-radius: 4px; min-height: 60px; color: #9bd197; }
+        .dev-stage { position: relative; overflow: hidden; background: radial-gradient(circle at 30% 20%, #2b2f33, #121314); }
+        /* Mimics ST: #sheld is an absolute flex column below a 36px top bar. */
+        #top-bar { position: absolute; top: 0; left: 0; right: 0; height: 36px; background: rgba(23,23,23,.95); box-shadow: 0 2px 20px rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; gap: 22px; color: #999; font-size: 18px; z-index: 3005; }
+        #sheld { position: absolute; top: 36px; left: 0; right: 0; margin: 0 auto; width: min(800px, 100%); height: calc(100% - 37px); display: flex; flex-direction: column; z-index: 30; }
+        #chat { flex-grow: 1; overflow-y: scroll; background: rgba(23,23,23,.92); padding: 0 6px; display: flex; flex-direction: column; gap: 4px; }
+        .mes { display: grid; grid-template-columns: 44px 1fr; gap: 10px; padding: 10px 6px; border-bottom: 1px solid rgba(0,0,0,.4); }
+        .mes .av { width: 44px; height: 44px; border-radius: 50%; background: #444; display: grid; place-items: center; font-size: 18px; }
+        .mes b { color: #e9e4d6; } .mes p { margin: 4px 0 0; color: #cfcfc4; }
+        .mes.narr { background: rgba(60,60,60,.25); font-style: italic; }
+        #form_sheld { padding: 4px 0 6px; }
+        #send_form { display: flex; align-items: center; gap: 8px; height: 46px; border: 1px solid rgba(0,0,0,.5); border-radius: 0 0 10px 10px; background: rgba(23,23,23,1); padding: 0 10px; color: #777; }
+        #send_form .ta { flex: 1; color: #666; }
+        @media (max-width: 1000px) { body { grid-template-columns: 1fr; } .dev-panel { display: none; } }
+    </style>
+</head>
+<body>
+    <aside class="dev-panel">
+        <h1>HOI · UI-B — prévia</h1>
+        <div style="font-size:11px;color:#888">Fixtures em <code>dev/ui-b/fixtures.js</code>. <code>?data=real</code> usa assets/scenario.</div>
+        <h2>Diálogos</h2>
+        <button data-open="wizard">Assistente — Período</button>
+        <button data-open="wizard2">Assistente — Nação</button>
+        <button data-open="wizard3">Assistente — Governo</button>
+        <button data-open="event">Evento (todos os efeitos)</button>
+        <button data-open="event-noart">Evento sem arte</button>
+        <button data-open="event-engine">Evento do motor (não adiável)</button>
+        <button data-open="victory">Fim de jogo — vitória</button>
+        <button data-open="defeat">Fim de jogo — derrota</button>
+        <button data-open="confirm">Confirmar</button>
+        <button data-open="danger">Confirmar (perigo)</button>
+        <button data-open="stack">Modais empilhados</button>
+        <h2>HUD</h2>
+        <button data-hud="campaign">Campanha (com decisão pendente)</button>
+        <button data-hud="calm">Campanha (sem pendência)</button>
+        <button data-hud="busy">Processando turno</button>
+        <button data-hud="over">Campanha encerrada</button>
+        <button data-hud="none">Sem campanha</button>
+        <button data-hud="collapsed">Recolhida</button>
+        <button data-hud="hidden">Oculta (showHud=false)</button>
+        <h2>Resultado</h2>
+        <pre id="log">—</pre>
+    </aside>
+    <main class="dev-stage">
+        <div id="top-bar"><i class="fa-solid fa-bars"></i><i class="fa-solid fa-plug"></i><i class="fa-solid fa-font"></i><i class="fa-solid fa-book-atlas"></i><i class="fa-solid fa-user-gear"></i><i class="fa-solid fa-cubes"></i><i class="fa-solid fa-address-card"></i></div>
+        <div id="sheld">
+            <div id="chat">
+                <div class="mes"><div class="av">🎖️</div><div><b>Conselho de Guerra</b><p>Senhora Presidente, o gabinete está reunido. As imagens de satélite de Roraima acabaram de chegar e o Ministro da Defesa pede uma decisão ainda hoje.</p></div></div>
+                <div class="mes"><div class="av">👤</div><div><b>Helena</b><p>Quero ouvir o Itamaraty antes. Que a Defesa prepare um plano de mobilização parcial, mas ninguém se move sem a minha ordem.</p></div></div>
+                <div class="mes narr"><div class="av">📰</div><div><b>Boletim Internacional</b><p>Novembro de 2027 — Caracas nega incursões na fronteira; Buenos Aires oferece mediação; o petróleo sobe 4% com o temor de conflito no norte da América do Sul.</p></div></div>
+                <div class="mes"><div class="av">🎖️</div><div><b>Conselho de Guerra</b><p>Entendido. O chanceler sugere contato imediato com a Casa Rosada. A Inteligência avisa: os blindados venezuelanos seguem a menos de 30 km de Pacaraima.</p></div></div>
+            </div>
+            <div id="form_sheld"><div id="send_form"><i class="fa-solid fa-bars"></i><span class="ta">Digite uma mensagem…</span><i class="fa-solid fa-paper-plane"></i></div></div>
+        </div>
+    </main>
+    <script type="module" src="./preview.js"></script>
+</body>
+</html>

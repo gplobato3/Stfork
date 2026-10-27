@@ -1,263 +1,238 @@
 /**
  * @file src/contract/worldState.js
- * World-state schema for the HOI Grande Estrategia SillyTavern extension.
+ * WorldState v2 shapes (JSDoc) + tiny pure helpers. Node-safe, no side effects.
  *
- * This file is part of the SHARED CONTRACT (src/contract/*). Every other
- * module (engine, scenario, llm, ui) imports from here. The shapes and the
- * factory below are STABLE: parallel modules code against them.
- *
- * Scenario: modern-day / near-future WW3. The player is the head of state of
- * a chosen nation. Display strings in these typedefs are pt-BR; identifiers
- * and comments are English.
- *
- * Pure data + factory only. No ST imports, no side effects. Safe under node.
+ * The WorldState is a plain JSON-serializable object persisted in
+ * ctx.chatMetadata[MODULE_KEY]. The engine is the ONLY writer; it always
+ * returns new objects (never mutates its input).
  */
 
-/** Current schema version. Bump when the world-state shape changes. */
-export const SCHEMA_VERSION = 1;
+import { BOUNDS, PHASES, SCHEMA_VERSION } from './constants.js';
 
 /**
- * Canonical list of the 7 resource keys every Nation tracks.
- * Order is stable and may be relied upon by the UI.
- * @type {ReadonlyArray<ResourceKey>}
- */
-export const RESOURCE_KEYS = Object.freeze([
-    'economy',
-    'military',
-    'stability',
-    'influence',
-    'tech',
-    'manpower',
-    'warSupport',
-]);
-
-/**
- * Known blocs. NON_ALIGNED is the catch-all; the list is not exhaustive and
- * scenario data MAY introduce additional string blocs.
- * @type {ReadonlyArray<string>}
- */
-export const BLOCS = Object.freeze(['NATO', 'CSTO', 'EU', 'BRICS', 'NON_ALIGNED']);
-
-/** Game phases. Drives which UI/controls are active. */
-export const PHASES = Object.freeze({
-    /** Before a campaign exists: show the nation picker. */
-    SETUP: 'SETUP',
-    /** Waiting for the player to resolve the current event / take decisions. */
-    PLAYER_TURN: 'PLAYER_TURN',
-    /** The LLM/engine is resolving the turn. */
-    RESOLVING: 'RESOLVING',
-    /** Terminal state (nation collapsed, nuclear war, victory, etc.). */
-    GAME_OVER: 'GAME_OVER',
-});
-
-/** Inclusive bounds shared contract-wide. */
-export const BOUNDS = Object.freeze({
-    RESOURCE_MIN: 0,
-    RESOURCE_MAX: 100,
-    RELATION_MIN: -100,
-    RELATION_MAX: 100,
-    TENSION_MIN: 0,
-    TENSION_MAX: 100,
-});
-
-/** Starting in-game date for the modern-day / near-future scenario. */
-export const START_DATE = Object.freeze({ year: 2027, month: 1 });
-
-/**
- * @typedef {('economy'|'military'|'stability'|'influence'|'tech'|'manpower'|'warSupport')} ResourceKey
+ * @typedef {'economy'|'military'|'stability'|'influence'|'tech'|'manpower'|'warSupport'} ResourceKey
+ * @typedef {Record<ResourceKey, number>} Resources  All integers in [0..100].
  */
 
 /**
- * @typedef {Object} Resources
- * All values are integers in [0..100] unless noted. Semantics:
- * @property {number} economy    Economic strength / budget headroom. 0..100.
- * @property {number} military   Readiness and size of the armed forces. 0..100.
- * @property {number} stability  Domestic political/social stability. 0..100.
- *                               Hitting 0 can trigger collapse/coup crises.
- * @property {number} influence  Diplomatic/soft power on the world stage. 0..100.
- * @property {number} tech       Technological/industrial edge. 0..100.
- * @property {number} manpower   Available mobilizable population pool. 0..100.
- * @property {number} warSupport Public appetite for conflict. 0..100.
- *                               Low warSupport makes aggressive options costly.
+ * AI behaviour knobs, all in [0..1].
+ * @typedef {Object} Personality
+ * @property {number} aggression   Willingness to threaten / attack.
+ * @property {number} diplomacy    Preference for deals, aid, pacts.
+ * @property {number} blocLoyalty  Likelihood of honoring alliance calls.
  */
 
 /**
  * @typedef {Object} Nation
- * @property {string} id         ISO-3166-1 alpha-3 code, e.g. 'BRA', 'USA', 'RUS'. Primary key.
- * @property {string} name       pt-BR display name, e.g. 'Brasil'.
- * @property {string} flagEmoji  Flag emoji, e.g. '🇧🇷'.
- * @property {string} bloc       One of BLOCS (string; scenario may extend).
- * @property {boolean} isPlayer  True for exactly one nation: the player's.
- * @property {string} capital    pt-BR capital name, e.g. 'Brasília'.
- * @property {Resources} resources The 7 tracked resources.
- * @property {string} government Government type (pt-BR), e.g. 'República Presidencialista'.
- * @property {string} leaderTitle Head-of-state title (pt-BR), e.g. 'Presidente', 'Rei', 'Chanceler'.
- * @property {string[]} traits   National modifiers/tags (pt-BR or English tags),
- *                               e.g. ['Potência Nuclear', 'Economia Emergente'].
+ * @property {string} id            ISO-3166 alpha-3 (custom 3-letter ids for disputed areas, e.g. 'KOS').
+ * @property {string} name          pt-BR display name ('Brasil').
+ * @property {string} flag          Flag emoji (fallback only; UI prefers assets/flags/<id>.svg).
+ * @property {string} bloc          One of BLOCS.
+ * @property {string} capital       pt-BR capital name.
+ * @property {string} government    pt-BR government type.
+ * @property {string} leaderTitle   pt-BR head-of-state title ('Presidente', 'Rei', 'Primeiro-Ministro'...).
+ * @property {boolean} playable     Authored nation the player may pick.
+ * @property {boolean} major        Great/regional power (AI acts every turn; labels always shown).
+ * @property {0|1|2} nuclear        0 none, 1 limited arsenal, 2 strategic arsenal.
+ * @property {Resources} resources
+ * @property {Personality} personality
+ * @property {string[]} traits      pt-BR tags ('Potência Nuclear', 'Exportador de Petróleo').
+ * @property {string} [blurb]       pt-BR 1-3 sentence description (picker / dossier).
+ * @property {'facil'|'normal'|'dificil'} [difficulty]
+ * @property {number} pc            Political capital in [0..BOUNDS.PC_MAX].
+ * @property {string} status        One of NATION_STATUS values.
+ * @property {?string} controller   Who controls the territory on the map (self id unless annexed).
+ * @property {?string} overlord     Puppet master id, else null.
  */
 
 /**
- * @typedef {Object} TurnLogEntry
- * @property {number} turn      Turn index this entry belongs to.
- * @property {{year:number, month:number}} date In-game date when logged.
- * @property {string} kind      'event' | 'decision' | 'effect' | 'system' | 'crisis'.
- * @property {string} text      pt-BR human-readable summary line.
- * @property {Object} [data]    Optional structured payload (effect applied, option chosen, etc.).
+ * Multi-member pact. Alliances/defense pacts drive calls to arms.
+ * @typedef {Object} Pact
+ * @property {string} id
+ * @property {'alliance'|'defense'|'trade'|'nonAggression'|'guarantee'} type
+ * @property {string} name          pt-BR ('OTAN', 'Acordo Comercial Brasil-China').
+ * @property {string[]} members     Nation ids. 'guarantee': members[0] guarantees members[1].
+ * @property {number} startedTurn
+ * @property {?number} expiresTurn  null = permanent.
+ */
+
+/**
+ * One front = one attacker pushing into one defender's territory.
+ * @typedef {Object} Front
+ * @property {string} attacker
+ * @property {string} defender
+ * @property {number} progress      0..100 = share of defender territory occupied by attacker.
+ */
+
+/**
+ * @typedef {Object} War
+ * @property {string} id
+ * @property {string} name          pt-BR ('Guerra Russo-Ucraniana').
+ * @property {string[]} attackers
+ * @property {string[]} defenders
+ * @property {number} startedTurn
+ * @property {Front[]} fronts
+ * @property {number} score         -100..100, positive = attackers winning.
+ * @property {Record<string, number>} exhaustion  nationId -> 0..100.
+ * @property {boolean} ceasefire    Fronts frozen while true.
+ */
+
+/**
+ * @typedef {Object} Crisis
+ * @property {string} id
+ * @property {string} title         pt-BR
+ * @property {string} description   pt-BR
+ * @property {'low'|'medium'|'high'|'critical'} severity
+ * @property {string[]} involved    Nation ids.
+ * @property {number} turnStarted
+ * @property {string} [category]    One of EVENT_CATEGORIES (art / icon).
+ * @property {string} [region]      pt-BR region label.
+ */
+
+/**
+ * Timed per-turn modifier ("Mobilização parcial: militar +2/mês, economia -1/mês, 6 meses").
+ * @typedef {Object} Modifier
+ * @property {string} id
+ * @property {string} nationId
+ * @property {string} label         pt-BR
+ * @property {Partial<Resources>} perTurn  Applied at each endTurn.
+ * @property {number} turnsLeft
+ * @property {string} [source]      Action id / event id that created it.
+ */
+
+/**
+ * @typedef {Object} NewsItem
+ * @property {number} turn
+ * @property {{year:number, month:number}} date
+ * @property {string} text          pt-BR headline.
+ * @property {'world'|'player'|'war'|'crisis'|'diplomacy'|'economy'} kind
+ * @property {string[]} nations
+ */
+
+/**
+ * @typedef {Object} LogEntry
+ * @property {number} turn
+ * @property {{year:number, month:number}} date
+ * @property {'system'|'action'|'event'|'decision'|'war'|'crisis'|'ai'} kind
+ * @property {string} text          pt-BR
+ * @property {Object} [data]
+ */
+
+/**
+ * Compact record of a resolved action, used by the sitrep / narration so the
+ * chat LLM can describe what actually happened mechanically.
+ * @typedef {Object} ActionRecord
+ * @property {number} turn
+ * @property {string} actorId
+ * @property {string} actionId
+ * @property {?string} targetId
+ * @property {boolean} success
+ * @property {'ui'|'order'|'ai'|'command'} source
+ * @property {string} summary       pt-BR one-liner ("Mobilização parcial decretada (sucesso).")
+ */
+
+/**
+ * @typedef {Object} DecisionRecord
+ * @property {number} turn
+ * @property {string} eventTitle
+ * @property {string} optionLabel
  */
 
 /**
  * @typedef {Object} WorldState
- * @property {number} schemaVersion   Equals SCHEMA_VERSION at creation time.
- * @property {string} campaignId      Unique id for this campaign/save.
- * @property {string} seed            Seed string for seedrandom (deterministic mechanics).
- * @property {number} turn            Integer turn counter, starts at 0 (setup) / 1 (first played turn).
- * @property {{year:number, month:number}} date In-game date. month is 1..12.
- * @property {string} phase           One of PHASES.
- * @property {?string} playerNationId id of the player's Nation (null during SETUP).
- * @property {Object.<string, Nation>} nations Map of nationId -> Nation (ISO alpha-3 keys).
- * @property {Object.<string, number>} relations Map of 'A|B' -> score in [-100..100].
- *                                     Key is the normalized pair (see relationKey()).
- * @property {import('./events.js').Crisis[]} activeCrises Ongoing crises.
- * @property {number} globalTension   WW3 escalation meter in [0..100]. 100 = global war.
- * @property {TurnLogEntry[]} log      Append-only history of notable turn events.
- * @property {Object} flags           Free-form boolean/scalar story flags set by effects.
+ * @property {number} schemaVersion     === SCHEMA_VERSION
+ * @property {string} campaignId
+ * @property {string} seed              Base seed; engine derives per-turn RNG from seed + turn + salt.
+ * @property {string} scenarioId
+ * @property {string} bookmarkId
+ * @property {number} turn              1 = first playable month.
+ * @property {{year:number, month:number}} date   month 1..12
+ * @property {{year:number, month:number}} endDate Campaign end (victory by survival).
+ * @property {string} phase             PHASES
+ * @property {{nationId:string, leaderName:string, title:string}} player
+ * @property {Record<string, Nation>} nations
+ * @property {Record<string, number>} relations   relationKey(a,b) -> -100..100 (missing = 0)
+ * @property {Pact[]} pacts
+ * @property {War[]} wars               Active wars only (ended wars move to log/news).
+ * @property {Crisis[]} crises
+ * @property {Modifier[]} modifiers
+ * @property {Record<string, Record<string, number>>} cooldowns  nationId -> actionId -> first turn available again
+ * @property {number} globalTension     0..100; 100 = nuclear exchange (game over)
+ * @property {?import('./events.js').GameEvent} pendingEvent  Unresolved decision (survives reloads).
+ * @property {import('./events.js').GameEvent[]} eventQueue  Engine-generated decisions waiting after pendingEvent.
+ * @property {ActionRecord[]} recentActions  Last CAPS.RECENT_ACTIONS player actions (sitrep).
+ * @property {DecisionRecord[]} decisions
+ * @property {NewsItem[]} news
+ * @property {LogEntry[]} log
+ * @property {?{kind:'victory'|'defeat', reason:string, turn:number}} outcome
+ * @property {Record<string, any>} flags      Free-form; keys starting with '_' are engine-reserved,
+ *                                            'stOrderKeys'/'stLastOrderKey' are written by StAPI (order dedupe).
+ * @property {Record<string, string[]>} neighbors  Copied from ScenarioData by newGame (endTurn has no scenario access).
+ * @property {Object} engine                  Opaque engine bookkeeping (id counter, baselines, coup counter...). Do not touch.
+ *
+ * `player` also carries `difficulty: 'facil'|'normal'|'dificil'` (PC income bonus survives reloads).
+ * War may carry engine-only fields: `called`, `ceasefireTurn`, `lastOfferTurn`, `lastSurrenderTurn`,
+ * and `startedDate` ({year, month}) for wars that predate the campaign (startedTurn 0).
  */
 
-/**
- * Build the canonical, normalized key for a relation between two nation ids.
- * Order-independent: relationKey('USA','RUS') === relationKey('RUS','USA').
- * @param {string} a nationId
- * @param {string} b nationId
- * @returns {string} 'A|B' with A,B sorted ascending.
- */
+/** Order-independent relation key: relationKey('USA','RUS') === 'RUS|USA'. */
 export function relationKey(a, b) {
     const x = String(a);
     const y = String(b);
     return x <= y ? `${x}|${y}` : `${y}|${x}`;
 }
 
-/**
- * Create a Resources object with all 7 keys, clamped to [0..100].
- * @param {Partial<Resources>} [overrides]
- * @returns {Resources}
- */
-export function createResources(overrides = {}) {
-    /** @type {Resources} */
-    const base = {
-        economy: 50,
-        military: 50,
-        stability: 50,
-        influence: 50,
-        tech: 50,
-        manpower: 50,
-        warSupport: 50,
-    };
-    for (const key of RESOURCE_KEYS) {
-        if (overrides && typeof overrides[key] === 'number') {
-            base[key] = clampResource(overrides[key]);
-        }
-    }
-    return base;
+/** Relation between a and b (0 when unset; 100 for a===b). */
+export function getRelation(state, a, b) {
+    if (a === b) return 100;
+    const v = state && state.relations ? state.relations[relationKey(a, b)] : undefined;
+    return typeof v === 'number' ? v : 0;
 }
 
-/**
- * Clamp a number into the resource range [0..100] and round to an integer.
- * @param {number} n
- * @returns {number}
- */
-export function clampResource(n) {
-    return clamp(Math.round(Number(n) || 0), BOUNDS.RESOURCE_MIN, BOUNDS.RESOURCE_MAX);
-}
-
-/**
- * Clamp a relation score into [-100..100].
- * @param {number} n
- * @returns {number}
- */
-export function clampRelation(n) {
-    return clamp(Math.round(Number(n) || 0), BOUNDS.RELATION_MIN, BOUNDS.RELATION_MAX);
-}
-
-/**
- * Clamp the global tension meter into [0..100].
- * @param {number} n
- * @returns {number}
- */
-export function clampTension(n) {
-    return clamp(Math.round(Number(n) || 0), BOUNDS.TENSION_MIN, BOUNDS.TENSION_MAX);
-}
-
-/**
- * Generic numeric clamp.
- * @param {number} n
- * @param {number} min
- * @param {number} max
- * @returns {number}
- */
 export function clamp(n, min, max) {
     const v = Number(n);
-    if (Number.isNaN(v)) return min;
+    if (!Number.isFinite(v)) return min;
     return Math.min(max, Math.max(min, v));
 }
 
-/**
- * Create a brand-new, empty world state in the SETUP phase.
- * The engine (Module A) fills nations/relations from the scenario (Module B)
- * once the player picks a nation.
- *
- * @param {Object} [opts]
- * @param {string} [opts.campaignId] Stable campaign id. A fallback is generated.
- * @param {string} [opts.seed]       Seed string for seedrandom. Falls back to campaignId.
- * @returns {WorldState}
- */
-export function createEmptyWorldState(opts = {}) {
-    const campaignId =
-        (opts && opts.campaignId) ||
-        `hoi-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
-    const seed = (opts && opts.seed) || campaignId;
-    return {
-        schemaVersion: SCHEMA_VERSION,
-        campaignId,
-        seed,
-        turn: 0,
-        date: { year: START_DATE.year, month: START_DATE.month },
-        phase: PHASES.SETUP,
-        playerNationId: null,
-        nations: {},
-        relations: {},
-        activeCrises: [],
-        globalTension: 20,
-        log: [],
-        flags: {},
-    };
+export const clampResource = (n) => Math.round(clamp(n, BOUNDS.RESOURCE_MIN, BOUNDS.RESOURCE_MAX));
+export const clampRelation = (n) => Math.round(clamp(n, BOUNDS.RELATION_MIN, BOUNDS.RELATION_MAX));
+export const clampTension = (n) => Math.round(clamp(n, BOUNDS.TENSION_MIN, BOUNDS.TENSION_MAX));
+export const clampProgress = (n) => Math.round(clamp(n, BOUNDS.PROGRESS_MIN, BOUNDS.PROGRESS_MAX));
+
+/** Add `months` to a {year, month} date. */
+export function addMonths(date, months) {
+    const total = date.year * 12 + (date.month - 1) + months;
+    return { year: Math.floor(total / 12), month: (total % 12) + 1 };
 }
 
-/**
- * Shallow structural check that an object looks like a WorldState.
- * Used by save/load and tests; NOT a deep validator.
- * @param {any} obj
- * @returns {boolean}
- */
-export function isWorldStateShape(obj) {
+/** Months from a to b (b - a). */
+export function monthsBetween(a, b) {
+    return (b.year * 12 + b.month) - (a.year * 12 + a.month);
+}
+
+/** Cheap structural check used by persistence before trusting a save. */
+export function isWorldState(obj) {
     return (
         !!obj &&
         typeof obj === 'object' &&
-        typeof obj.schemaVersion === 'number' &&
+        obj.schemaVersion === SCHEMA_VERSION &&
         typeof obj.campaignId === 'string' &&
-        typeof obj.seed === 'string' &&
         typeof obj.turn === 'number' &&
         !!obj.date &&
-        typeof obj.date.year === 'number' &&
-        typeof obj.date.month === 'number' &&
-        typeof obj.phase === 'string' &&
+        !!obj.player &&
+        typeof obj.player.nationId === 'string' &&
         !!obj.nations &&
         typeof obj.nations === 'object' &&
-        !!obj.relations &&
-        typeof obj.relations === 'object' &&
-        Array.isArray(obj.activeCrises) &&
-        typeof obj.globalTension === 'number' &&
-        Array.isArray(obj.log) &&
-        !!obj.flags &&
-        typeof obj.flags === 'object'
+        Array.isArray(obj.wars) &&
+        Array.isArray(obj.crises) &&
+        typeof obj.phase === 'string' &&
+        Object.values(PHASES).includes(obj.phase)
     );
+}
+
+/** The player's Nation object (or null). */
+export function playerNation(state) {
+    if (!state || !state.player || !state.nations) return null;
+    return state.nations[state.player.nationId] || null;
 }

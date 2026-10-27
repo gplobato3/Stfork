@@ -1,19 +1,16 @@
 {
-    "display_name": "HOI - Grande Estrategia",
-    "version": "1.0.0",
+    "display_name": "Grande Estratégia (HOI)",
+    "version": "2.0.0",
     "author": "gplobato3",
     "homePage": "https://github.com/gplobato3/Stfork",
     "loading_order": 100,
-    "minimum_client_version": "1.12.6",
+    "minimum_client_version": "1.13.0",
     "js": "index.js",
     "css": "style.css",
     "generate_interceptor": "hoiGenerateInterceptor",
-    "i18n": {
-        "pt-br": "i18n/pt-br.json"
-    },
+    "auto_update": true,
     "hooks": {
         "activate": "onActivate",
-        "install": "onInstall",
         "enable": "onEnable",
         "disable": "onDisable"
     }

@@ -1,0 +1,438 @@
+[
+  {
+    "id": "b2026",
+    "name": "O Mundo Hoje",
+    "date": { "year": 2026, "month": 10 },
+    "endDate": { "year": 2036, "month": 10 },
+    "description": "Outubro de 2026. A guerra na Ucrânia entra no quinto ano sem cessar-fogo, um armistício frágil segura o confronto entre EUA, Israel e Irã em torno do Estreito de Ormuz e a Venezuela vive uma transição incerta. A China aperta o cerco a Taiwan, enquanto Europa e Ásia correm para se rearmar. Nenhuma grande potência está em guerra com outra, por enquanto.",
+    "art": "bookmark-b2026",
+    "tension": 42,
+    "recommended": ["BRA", "USA", "CHN", "RUS", "UKR", "IND", "DEU", "IRN"],
+    "overrides": {}
+  },
+  {
+    "id": "b2028",
+    "name": "À Beira do Abismo",
+    "date": { "year": 2028, "month": 3 },
+    "endDate": { "year": 2038, "month": 3 },
+    "description": "Março de 2028. Um cessar-fogo armado congelou a guerra na Ucrânia, mas a Rússia testa a OTAN no Báltico com incidentes cada vez mais ousados. Pequim impôs uma quarentena naval a Taiwan e comboios escoltados pelos EUA e pelo Japão desafiam o cerco. O Sahel desmorona e a Etiópia luta por uma saída para o mar. O mundo está a um erro de cálculo de uma guerra entre grandes potências.",
+    "art": "bookmark-b2028",
+    "tension": 62,
+    "recommended": ["BRA", "USA", "CHN", "TWN", "RUS", "POL", "JPN", "IND"],
+    "overrides": {
+      "nations": {
+        "TWN": { "resources": { "economy": 62, "military": 60, "stability": 50, "warSupport": 66 } },
+        "CHN": { "resources": { "economy": 82, "military": 90, "warSupport": 64 } },
+        "USA": { "resources": { "military": 96, "stability": 48, "warSupport": 48 } },
+        "JPN": { "resources": { "military": 70, "warSupport": 48 } },
+        "KOR": { "resources": { "military": 74, "warSupport": 54 } },
+        "PHL": { "resources": { "military": 40, "warSupport": 50 } },
+        "AUS": { "resources": { "military": 56, "warSupport": 46 } },
+        "RUS": { "resources": { "economy": 44, "military": 74, "stability": 50, "manpower": 60, "warSupport": 54 } },
+        "UKR": { "resources": { "economy": 32, "military": 64, "stability": 50, "warSupport": 56 } },
+        "BLR": { "resources": { "military": 44, "warSupport": 38 } },
+        "POL": { "resources": { "military": 72, "warSupport": 68 } },
+        "EST": { "resources": { "military": 32, "warSupport": 72 } },
+        "LVA": { "resources": { "military": 30, "warSupport": 66 } },
+        "LTU": { "resources": { "military": 34, "warSupport": 70 } },
+        "FIN": { "resources": { "military": 58, "warSupport": 72 } },
+        "SWE": { "resources": { "military": 55, "warSupport": 56 } },
+        "DEU": { "resources": { "military": 64, "warSupport": 42 } },
+        "PRK": { "resources": { "military": 66, "warSupport": 78 } },
+        "IRN": { "resources": { "economy": 30, "military": 50, "stability": 34 } },
+        "VEN": { "government": "República Presidencialista", "leaderTitle": "Presidente", "resources": { "economy": 30, "stability": 40 } },
+        "ETH": { "resources": { "economy": 26, "stability": 26, "warSupport": 58 } },
+        "MLI": { "resources": { "stability": 10 } },
+        "BFA": { "resources": { "stability": 10 } },
+        "NER": { "resources": { "stability": 14 } },
+        "NGA": { "resources": { "stability": 30 } }
+      },
+      "relations": {
+        "CHN|TWN": -92, "CHN|USA": -72, "CHN|JPN": -72, "CHN|PHL": -74, "CHN|AUS": -40, "CHN|KOR": -30,
+        "USA|TWN": 80, "JPN|TWN": 72, "RUS|USA": -70, "RUS|UKR": -88, "RUS|POL": -92, "RUS|EST": -94,
+        "RUS|LVA": -92, "RUS|LTU": -94, "RUS|FIN": -86, "BLR|LTU": -84, "BLR|POL": -82, "IRN|USA": -85,
+        "IRN|ISR": -95, "USA|VEN": 40, "BRA|VEN": 30, "DZA|MLI": -60, "ETH|ERI": -90, "EGY|ETH": -60,
+        "CHN|RUS": 78, "CHN|PRK": 64
+      },
+      "pactsAdd": [
+        {
+          "id": "pact-usa-twn-guarantee",
+          "type": "guarantee",
+          "name": "Garantia de Segurança dos EUA a Taiwan",
+          "members": ["USA", "TWN"],
+          "startedTurn": 0,
+          "expiresTurn": null
+        },
+        {
+          "id": "pact-jpn-phl",
+          "type": "defense",
+          "name": "Acordo de Defesa Japão–Filipinas",
+          "members": ["JPN", "PHL"],
+          "startedTurn": 0,
+          "expiresTurn": null
+        }
+      ],
+      "wars": [
+        {
+          "id": "war-rus-ukr",
+          "name": "Guerra Russo-Ucraniana (cessar-fogo de 2027)",
+          "attackers": ["RUS"],
+          "defenders": ["UKR"],
+          "startedTurn": 0,
+          "startedDate": { "year": 2022, "month": 2 },
+          "fronts": [{ "attacker": "RUS", "defender": "UKR", "progress": 21 }],
+          "score": 14,
+          "exhaustion": { "RUS": 58, "UKR": 70 },
+          "ceasefire": true
+        },
+        {
+          "id": "war-eth-eri",
+          "name": "Guerra do Mar Vermelho",
+          "attackers": ["ETH"],
+          "defenders": ["ERI"],
+          "startedTurn": 0,
+          "startedDate": { "year": 2027, "month": 11 },
+          "fronts": [{ "attacker": "ETH", "defender": "ERI", "progress": 10 }],
+          "score": 6,
+          "exhaustion": { "ETH": 18, "ERI": 24 },
+          "ceasefire": false
+        }
+      ],
+      "crises": [
+        {
+          "id": "crisis-taiwan-blockade",
+          "title": "Quarentena Naval de Taiwan",
+          "description": "Pequim declarou inspeção alfandegária obrigatória de todo navio com destino a Taiwan e cercou a ilha com a guarda costeira e a marinha. Comboios escoltados por EUA e Japão desafiam o cerco, e um único disparo pode iniciar a guerra.",
+          "severity": "critical",
+          "involved": ["CHN", "TWN", "USA", "JPN", "PHL", "KOR", "AUS"],
+          "turnStarted": 0,
+          "category": "naval",
+          "region": "Indo-Pacífico"
+        },
+        {
+          "id": "crisis-baltic-incidents",
+          "title": "Incidentes no Báltico",
+          "description": "Cabos submarinos cortados, interferência de GPS, voos militares sem transponder e homens armados sem insígnia perto de Narva. Moscou exige trânsito livre para Kaliningrado pelo corredor de Suwałki e a OTAN mobiliza reforços.",
+          "severity": "high",
+          "involved": ["RUS", "BLR", "EST", "LVA", "LTU", "POL", "FIN", "SWE", "DEU"],
+          "turnStarted": 0,
+          "category": "military",
+          "region": "Mar Báltico"
+        },
+        {
+          "id": "crisis-sahel-collapse",
+          "title": "Colapso no Sahel",
+          "description": "Grupos jihadistas cercam Bamako e cortam as estradas de Burkina Faso e do Níger. As juntas recorrem a mercenários estrangeiros enquanto centenas de milhares de refugiados seguem para o litoral do Golfo da Guiné.",
+          "severity": "high",
+          "involved": ["MLI", "BFA", "NER", "NGA", "DZA", "CIV", "GHA", "BEN", "TGO"],
+          "turnStarted": 0,
+          "category": "unrest",
+          "region": "Sahel"
+        },
+        {
+          "id": "crisis-ukraine-ceasefire",
+          "title": "Cessar-fogo Armado na Ucrânia",
+          "description": "A linha de contato está congelada desde 2027, mas violações acontecem todos os dias. A Europa debate o envio de uma força de garantia enquanto a Rússia reconstrói seu exército.",
+          "severity": "medium",
+          "involved": ["RUS", "UKR", "POL", "DEU", "GBR", "FRA", "USA"],
+          "turnStarted": 0,
+          "category": "military",
+          "region": "Europa Oriental"
+        },
+        {
+          "id": "crisis-korea-nuclear-test",
+          "title": "Novo Teste Nuclear Norte-Coreano",
+          "description": "Pyongyang realizou seu oitavo teste nuclear e ameaça usar armas táticas se houver guerra em Taiwan. Seul debate abertamente desenvolver a própria bomba.",
+          "severity": "high",
+          "involved": ["PRK", "KOR", "JPN", "USA", "CHN"],
+          "turnStarted": 0,
+          "category": "nuclear",
+          "region": "Leste Asiático"
+        },
+        {
+          "id": "crisis-iran-nuclear",
+          "title": "Programa Nuclear Iraniano Reconstituído",
+          "description": "Inspetores perderam o acesso às instalações iranianas e imagens de satélite indicam novas centrífugas em túneis profundos. Israel ameaça atacar novamente e os países do Golfo se preparam para o pior.",
+          "severity": "high",
+          "involved": ["IRN", "ISR", "USA", "SAU", "ARE"],
+          "turnStarted": 0,
+          "category": "nuclear",
+          "region": "Oriente Médio"
+        },
+        {
+          "id": "crisis-chip-shock",
+          "title": "Choque Global dos Semicondutores",
+          "description": "A quarentena de Taiwan atrasa embarques de chips avançados e paralisa linhas de produção de carros a servidores. Governos correm para subsidiar fábricas e estocar componentes.",
+          "severity": "high",
+          "involved": ["TWN", "CHN", "USA", "KOR", "JPN", "NLD", "DEU"],
+          "turnStarted": 0,
+          "category": "economy",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-grid-cyberattacks",
+          "title": "Ciberataques contra Redes Elétricas",
+          "description": "Apagões coordenados atingem redes elétricas na Europa e nos EUA. As investigações apontam para grupos ligados a Estados rivais, e as alianças discutem se um ciberataque pode acionar a defesa coletiva.",
+          "severity": "high",
+          "involved": ["RUS", "CHN", "USA", "DEU", "GBR", "EST"],
+          "turnStarted": 0,
+          "category": "cyber",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-sudan-famine",
+          "title": "Fome no Sudão",
+          "description": "Cinco anos de guerra civil deixaram metade da população sudanesa em insegurança alimentar. Comboios de ajuda são bloqueados e os campos de refugiados no Chade e no Sudão do Sul estão superlotados.",
+          "severity": "high",
+          "involved": ["SDN", "SSD", "TCD", "EGY"],
+          "turnStarted": 0,
+          "category": "humanitarian",
+          "region": "Nordeste da África"
+        },
+        {
+          "id": "crisis-red-sea-route",
+          "title": "Rota do Mar Vermelho Fechada",
+          "description": "A guerra entre Etiópia e Eritreia e os ataques houthis no Iêmen tornaram o Mar Vermelho uma zona de exclusão para a navegação comercial. Os fretes disparam e o Egito perde a receita do Canal de Suez.",
+          "severity": "medium",
+          "involved": ["ETH", "ERI", "YEM", "EGY", "SAU", "DJI"],
+          "turnStarted": 0,
+          "category": "naval",
+          "region": "Mar Vermelho"
+        }
+      ]
+    }
+  },
+  {
+    "id": "b2031",
+    "name": "A Terceira Guerra Mundial",
+    "date": { "year": 2031, "month": 8 },
+    "endDate": { "year": 2041, "month": 8 },
+    "description": "Agosto de 2031. Em poucas semanas, a quarentena de Taiwan virou desembarque, a Rússia avançou sobre os países bálticos e a Coreia do Norte cruzou a Zona Desmilitarizada. A OTAN invocou o Artigo 5 e os aliados do Pacífico lutam contra a coalizão liderada por Moscou e Pequim. Brasil, Índia e Turquia são cortejados pelos dois lados enquanto as forças nucleares estão em prontidão máxima.",
+    "art": "bookmark-b2031",
+    "tension": 84,
+    "recommended": ["BRA", "USA", "CHN", "RUS", "POL", "TWN", "IND", "EST"],
+    "overrides": {
+      "nations": {
+        "USA": { "resources": { "economy": 84, "military": 95, "stability": 44, "manpower": 76, "warSupport": 64 } },
+        "CHN": { "resources": { "economy": 74, "military": 92, "stability": 64, "influence": 78, "warSupport": 70 } },
+        "RUS": { "resources": { "economy": 36, "military": 74, "stability": 48, "manpower": 56, "warSupport": 62 } },
+        "BLR": { "resources": { "economy": 28, "military": 42, "stability": 40, "warSupport": 36 } },
+        "PRK": { "resources": { "economy": 10, "military": 64, "warSupport": 80 } },
+        "IRN": { "resources": { "economy": 28, "military": 52, "warSupport": 60 } },
+        "EST": { "resources": { "economy": 38, "military": 30, "stability": 40, "warSupport": 82 } },
+        "LVA": { "resources": { "economy": 34, "military": 28, "stability": 40, "warSupport": 76 } },
+        "LTU": { "resources": { "economy": 40, "military": 34, "stability": 46, "warSupport": 80 } },
+        "POL": { "resources": { "economy": 56, "military": 78, "warSupport": 76 } },
+        "FIN": { "resources": { "military": 62, "warSupport": 80 } },
+        "SWE": { "resources": { "military": 58, "warSupport": 64 } },
+        "NOR": { "resources": { "economy": 80, "military": 54, "warSupport": 62 } },
+        "DNK": { "resources": { "military": 46, "warSupport": 58 } },
+        "DEU": { "resources": { "economy": 68, "military": 70, "warSupport": 54 } },
+        "GBR": { "resources": { "economy": 64, "military": 70, "warSupport": 60 } },
+        "FRA": { "resources": { "economy": 64, "military": 74, "warSupport": 56 } },
+        "ITA": { "resources": { "economy": 56, "warSupport": 40 } },
+        "CAN": { "resources": { "military": 50, "warSupport": 48 } },
+        "UKR": { "resources": { "economy": 30, "military": 66, "warSupport": 70 } },
+        "TWN": { "resources": { "economy": 46, "military": 58, "stability": 44, "warSupport": 74 } },
+        "JPN": { "resources": { "economy": 66, "military": 76, "warSupport": 62 } },
+        "KOR": { "resources": { "economy": 62, "military": 78, "warSupport": 70 } },
+        "PHL": { "resources": { "economy": 42, "military": 42, "warSupport": 58 } },
+        "AUS": { "resources": { "military": 60, "warSupport": 58 } },
+        "IND": { "resources": { "economy": 76, "military": 80, "influence": 74 } },
+        "BRA": { "resources": { "economy": 60, "influence": 64, "warSupport": 22 } },
+        "TUR": { "resources": { "military": 76, "influence": 66 } },
+        "SAU": { "resources": { "economy": 72, "influence": 66 } }
+      },
+      "relations": {
+        "RUS|USA": -96, "CHN|USA": -95, "CHN|TWN": -100, "CHN|JPN": -94, "CHN|PHL": -92, "CHN|AUS": -80,
+        "CHN|KOR": -70, "PRK|KOR": -100, "PRK|USA": -100, "PRK|JPN": -94, "RUS|EST": -100, "RUS|LVA": -100,
+        "RUS|LTU": -100, "RUS|POL": -98, "RUS|FIN": -95, "RUS|DEU": -90, "RUS|GBR": -95, "RUS|FRA": -88,
+        "RUS|UKR": -100, "BLR|POL": -95, "BLR|LTU": -95, "RUS|JPN": -80, "RUS|KOR": -70, "CHN|DEU": -50,
+        "CHN|GBR": -70, "CHN|FRA": -50, "CHN|RUS": 88, "CHN|PRK": 80, "CHN|IRN": 70, "IRN|RUS": 74,
+        "IRN|USA": -95, "IRN|SAU": -50, "CHN|IND": -46, "IND|USA": 46, "BRA|USA": 32, "BRA|CHN": 36,
+        "RUS|TUR": -30, "TUR|USA": 36, "HUN|RUS": -10, "USA|TWN": 92, "JPN|TWN": 84, "JPN|KOR": 70
+      },
+      "pactsAdd": [
+        {
+          "id": "pact-usa-twn-guarantee",
+          "type": "guarantee",
+          "name": "Garantia de Segurança dos EUA a Taiwan",
+          "members": ["USA", "TWN"],
+          "startedTurn": 0,
+          "expiresTurn": null
+        },
+        {
+          "id": "pact-jpn-phl",
+          "type": "defense",
+          "name": "Acordo de Defesa Japão–Filipinas",
+          "members": ["JPN", "PHL"],
+          "startedTurn": 0,
+          "expiresTurn": null
+        },
+        {
+          "id": "pact-pacific-coalition",
+          "type": "alliance",
+          "name": "Coalizão do Pacífico",
+          "members": ["USA", "JPN", "KOR", "AUS", "PHL", "TWN", "NZL"],
+          "startedTurn": 0,
+          "expiresTurn": null
+        },
+        {
+          "id": "pact-eurasian-defense",
+          "type": "alliance",
+          "name": "Pacto de Defesa Eurasiático",
+          "members": ["RUS", "CHN", "PRK", "BLR", "IRN"],
+          "startedTurn": 0,
+          "expiresTurn": null
+        }
+      ],
+      "pactsRemove": ["pact-chn-rus", "pact-irn-rus"],
+      "wars": [
+        {
+          "id": "war-ww3-europe",
+          "name": "Terceira Guerra Mundial — Frente Europeia",
+          "attackers": ["RUS", "BLR"],
+          "defenders": ["EST", "LVA", "LTU", "POL", "FIN", "SWE", "NOR", "DNK", "DEU", "GBR", "FRA", "NLD", "BEL",
+            "LUX", "ITA", "ESP", "PRT", "CAN", "USA", "CZE", "ROU", "BGR", "GRC", "HRV", "SVN", "ALB", "MNE",
+            "MKD", "ISL", "UKR"],
+          "startedTurn": 0,
+          "startedDate": { "year": 2031, "month": 5 },
+          "fronts": [
+            { "attacker": "RUS", "defender": "EST", "progress": 38 },
+            { "attacker": "RUS", "defender": "LVA", "progress": 26 },
+            { "attacker": "RUS", "defender": "LTU", "progress": 18 },
+            { "attacker": "BLR", "defender": "LTU", "progress": 10 },
+            { "attacker": "RUS", "defender": "POL", "progress": 6 },
+            { "attacker": "BLR", "defender": "POL", "progress": 4 },
+            { "attacker": "RUS", "defender": "FIN", "progress": 5 },
+            { "attacker": "RUS", "defender": "UKR", "progress": 26 }
+          ],
+          "score": 10,
+          "exhaustion": { "RUS": 44, "BLR": 30, "EST": 46, "LVA": 40, "LTU": 36, "POL": 22, "FIN": 18, "UKR": 58,
+            "USA": 10, "GBR": 12, "DEU": 12, "FRA": 10 },
+          "ceasefire": false
+        },
+        {
+          "id": "war-ww3-pacific",
+          "name": "Terceira Guerra Mundial — Frente do Pacífico",
+          "attackers": ["CHN"],
+          "defenders": ["TWN", "USA", "JPN", "PHL", "AUS"],
+          "startedTurn": 0,
+          "startedDate": { "year": 2031, "month": 4 },
+          "fronts": [
+            { "attacker": "CHN", "defender": "TWN", "progress": 22 },
+            { "attacker": "CHN", "defender": "PHL", "progress": 6 },
+            { "attacker": "CHN", "defender": "JPN", "progress": 3 }
+          ],
+          "score": 8,
+          "exhaustion": { "CHN": 20, "TWN": 42, "USA": 14, "JPN": 16, "PHL": 22, "AUS": 8 },
+          "ceasefire": false
+        },
+        {
+          "id": "war-korea",
+          "name": "Segunda Guerra da Coreia",
+          "attackers": ["PRK"],
+          "defenders": ["KOR", "USA"],
+          "startedTurn": 0,
+          "startedDate": { "year": 2031, "month": 6 },
+          "fronts": [{ "attacker": "PRK", "defender": "KOR", "progress": 9 }],
+          "score": 2,
+          "exhaustion": { "PRK": 34, "KOR": 24, "USA": 10 },
+          "ceasefire": false
+        }
+      ],
+      "crises": [
+        {
+          "id": "crisis-nuclear-alert",
+          "title": "Alerta Nuclear Global",
+          "description": "Forças estratégicas de EUA, Rússia e China estão em prontidão máxima e armas nucleares táticas foram deslocadas para perto das frentes. Qualquer erro de leitura de radar pode desencadear uma troca nuclear.",
+          "severity": "critical",
+          "involved": ["USA", "RUS", "CHN", "GBR", "FRA", "PRK"],
+          "turnStarted": 0,
+          "category": "nuclear",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-indo-pacific-routes",
+          "title": "Bloqueio das Rotas do Indo-Pacífico",
+          "description": "Submarinos e minas tornam o Mar do Sul da China intransitável e o Estreito de Malaca vira gargalo disputado. O comércio entre Ásia, Europa e Américas despenca.",
+          "severity": "critical",
+          "involved": ["CHN", "USA", "IND", "IDN", "MYS", "AUS", "JPN"],
+          "turnStarted": 0,
+          "category": "naval",
+          "region": "Indo-Pacífico"
+        },
+        {
+          "id": "crisis-chips-collapse",
+          "title": "Colapso das Cadeias de Semicondutores",
+          "description": "Com as fábricas de Taiwan paradas pela guerra, a produção mundial de chips avançados cai drasticamente. Indústrias de defesa e de tecnologia disputam cada componente.",
+          "severity": "critical",
+          "involved": ["TWN", "KOR", "JPN", "USA", "CHN", "NLD"],
+          "turnStarted": 0,
+          "category": "economy",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-total-cyberwar",
+          "title": "Ciberguerra Total",
+          "description": "Redes elétricas, bancos, satélites e sistemas de comando sofrem ataques contínuos. Apagões de dias atingem capitais dos dois lados da guerra.",
+          "severity": "high",
+          "involved": ["RUS", "CHN", "USA", "GBR", "DEU", "EST", "JPN"],
+          "turnStarted": 0,
+          "category": "cyber",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-eastern-exodus",
+          "title": "Êxodo no Leste Europeu",
+          "description": "Milhões de civis fogem dos países bálticos, da Ucrânia e do leste da Polônia. Alemanha e países nórdicos montam campos de refugiados enquanto as estradas são disputadas com comboios militares.",
+          "severity": "high",
+          "involved": ["EST", "LVA", "LTU", "POL", "UKR", "FIN", "DEU"],
+          "turnStarted": 0,
+          "category": "humanitarian",
+          "region": "Europa Oriental"
+        },
+        {
+          "id": "crisis-energy-shock",
+          "title": "Choque Energético Global",
+          "description": "O Irã fechou novamente o Estreito de Ormuz em apoio aos aliados, e o petróleo ultrapassa todos os recordes. Racionamento de combustível chega à Europa, ao Japão e à Índia.",
+          "severity": "high",
+          "involved": ["IRN", "SAU", "QAT", "ARE", "USA", "DEU", "JPN", "IND"],
+          "turnStarted": 0,
+          "category": "energy",
+          "region": "Golfo Pérsico"
+        },
+        {
+          "id": "crisis-neutrals-pressure",
+          "title": "Neutros sob Pressão",
+          "description": "As duas coalizões ameaçam com sanções secundárias quem continuar comerciando com o inimigo. Brasil, Índia, Turquia, Indonésia e África do Sul tentam preservar a neutralidade e lucrar com a demanda por alimentos, minérios e energia.",
+          "severity": "medium",
+          "involved": ["BRA", "IND", "TUR", "IDN", "ZAF", "SAU"],
+          "turnStarted": 0,
+          "category": "diplomacy",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-food-crisis",
+          "title": "Crise Alimentar Mundial",
+          "description": "A guerra fechou as exportações de grãos do Mar Negro e encareceu fertilizantes e fretes. Protestos por comida se espalham no Egito, no Paquistão e em Bangladesh, enquanto Brasil e Argentina viram celeiros disputados.",
+          "severity": "high",
+          "involved": ["EGY", "NGA", "PAK", "BGD", "ETH", "UKR", "BRA", "ARG"],
+          "turnStarted": 0,
+          "category": "humanitarian",
+          "region": "Global"
+        },
+        {
+          "id": "crisis-sahel-war",
+          "title": "O Sahel em Chamas",
+          "description": "Sem atenção das grandes potências, insurgentes controlam grande parte de Mali e Burkina Faso e avançam sobre o norte da Nigéria. Mercenários dos dois lados disputam minas de ouro e urânio.",
+          "severity": "medium",
+          "involved": ["MLI", "BFA", "NER", "NGA", "DZA"],
+          "turnStarted": 0,
+          "category": "unrest",
+          "region": "Sahel"
+        }
+      ]
+    }
+  }
+]

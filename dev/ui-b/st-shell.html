@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>HOI — UI-B · SillyTavern shell</title>
+    <!--
+      Dev-only: SillyTavern 1.19's REAL stylesheets (read-only reference checkout) with
+      a trimmed copy of its DOM skeleton, to verify that the HUD, the settings drawer and
+      the wand item sit correctly inside ST's own layout (desktop + mobile-styles.css).
+    -->
+    <link rel="stylesheet" href="/.st-ref/public/style.css">
+    <link rel="stylesheet" href="/.st-ref/public/webfonts/NotoSans/stylesheet.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/solid.min.css">
+    <!-- ST's index.html loads style.css a second time after Font Awesome. -->
+    <link rel="stylesheet" href="/.st-ref/public/style.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/st-tailwind.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/toggle-dependent.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/extensions-panel.css">
+    <link rel="stylesheet" href="/.st-ref/public/css/mobile-styles.css">
+    <link rel="stylesheet" href="../../style.css">
+    <style>
+        body { background: radial-gradient(circle at 30% 20%, #3a3f44, #121314); }
+        #extensionsMenu.dev-open { display: flex !important; position: fixed; left: calc((100vw - var(--sheldWidth)) / 2 + 4px); bottom: 64px; min-width: 240px; }
+    </style>
+</head>
+<body>
+    <div id="top-bar"></div>
+    <div id="top-settings-holder">
+        <div class="drawer"><div class="drawer-toggle"><div class="drawer-icon fa-solid fa-sliders fa-fw closedIcon"></div></div></div>
+        <div class="drawer"><div class="drawer-toggle"><div class="drawer-icon fa-solid fa-plug fa-fw closedIcon"></div></div></div>
+        <div class="drawer"><div class="drawer-toggle"><div class="drawer-icon fa-solid fa-font fa-fw closedIcon"></div></div></div>
+        <div class="drawer"><div class="drawer-toggle"><div class="drawer-icon fa-solid fa-book-atlas fa-fw closedIcon"></div></div></div>
+        <div class="drawer"><div class="drawer-toggle"><div class="drawer-icon fa-solid fa-user-gear fa-fw closedIcon"></div></div></div>
+        <div id="extensions-settings-button" class="drawer">
+            <div class="drawer-toggle"><div class="drawer-icon fa-solid fa-cubes fa-fw closedIcon" title="Extensions"></div></div>
+            <div id="rm_extensions_block" class="drawer-content closedDrawer">
+                <div class="extensions_block flex-container">
+                    <div class="alignitemscenter flex-container wide100p">
+                        <h3 class="margin0 flex1">Extensions</h3>
+                    </div>
+                    <div id="extensions_settings" class="flex1 wide50p">
+                        <div class="inline-drawer"><div class="inline-drawer-toggle inline-drawer-header"><b>Image Captioning</b><div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div></div><div class="inline-drawer-content"></div></div>
+                        <div class="inline-drawer"><div class="inline-drawer-toggle inline-drawer-header"><b>Character Expressions</b><div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div></div><div class="inline-drawer-content"></div></div>
+                    </div>
+                    <div id="extensions_settings2" class="flex1 wide50p">
+                        <div class="inline-drawer"><div class="inline-drawer-toggle inline-drawer-header"><b>Summarize</b><div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div></div><div class="inline-drawer-content"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="drawer"><div class="drawer-toggle"><div class="drawer-icon fa-solid fa-address-card fa-fw closedIcon"></div></div></div>
+    </div>
+
+    <div id="sheld">
+        <div id="sheldheader" class="fa-solid fa-grip drag-grabber"></div>
+        <div id="chat">
+            <div class="mes" is_user="false"><div class="mesAvatarWrapper"><div class="avatar"><img src="/.st-ref/public/img/ai4.png" alt=""></div></div><div class="mes_block"><div class="ch_name flex-container justifySpaceBetween"><div class="flex-container flex1 alignitemscenter"><span class="name_text">Conselho de Guerra</span></div></div><div class="mes_text"><p>Senhora Presidente, o gabinete está reunido. As imagens de satélite de Roraima acabaram de chegar e o Ministro da Defesa pede uma decisão ainda hoje.</p></div></div></div>
+            <div class="mes" is_user="true"><div class="mesAvatarWrapper"><div class="avatar"><img src="/.st-ref/public/img/user-default.png" alt=""></div></div><div class="mes_block"><div class="ch_name flex-container justifySpaceBetween"><div class="flex-container flex1 alignitemscenter"><span class="name_text">Helena</span></div></div><div class="mes_text"><p>Quero ouvir o Itamaraty antes. Que a Defesa prepare um plano de mobilização parcial, mas ninguém se move sem a minha ordem.</p></div></div></div>
+            <div class="mes" is_user="false"><div class="mesAvatarWrapper"><div class="avatar"><img src="/.st-ref/public/img/five.png" alt=""></div></div><div class="mes_block"><div class="ch_name flex-container justifySpaceBetween"><div class="flex-container flex1 alignitemscenter"><span class="name_text">Boletim Internacional</span></div></div><div class="mes_text"><p><em>Novembro de 2027 — Caracas nega incursões na fronteira; Buenos Aires oferece mediação; o petróleo sobe 4% com o temor de conflito no norte da América do Sul.</em></p></div></div></div>
+            <div class="mes" is_user="false"><div class="mesAvatarWrapper"><div class="avatar"><img src="/.st-ref/public/img/ai4.png" alt=""></div></div><div class="mes_block"><div class="ch_name flex-container justifySpaceBetween"><div class="flex-container flex1 alignitemscenter"><span class="name_text">Conselho de Guerra</span></div></div><div class="mes_text"><p>Entendido. O chanceler sugere contato imediato com a Casa Rosada. A Inteligência avisa: os blindados venezuelanos seguem a menos de 30 km de Pacaraima.</p></div></div></div>
+        </div>
+        <div id="form_sheld">
+            <div id="send_form">
+                <div id="leftSendForm" class="alignContentCenter">
+                    <div id="options_button" class="fa-solid fa-bars interactable"></div>
+                    <div id="extensionsMenuButton" class="fa-solid fa-magic-wand-sparkles interactable" title="Extensions"></div>
+                </div>
+                <textarea id="send_textarea" placeholder="Digite uma mensagem, ou /? para ajuda" autocomplete="off"></textarea>
+                <div id="rightSendForm" class="alignContentCenter"><div id="send_but" class="fa-solid fa-paper-plane interactable"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="extensionsMenu" class="options-content" style="display: none;">
+        <div id="gallery_wand_container" class="extension_container"><div class="list-group-item flex-container flexGap5 interactable" tabindex="0"><div class="fa-solid fa-sd-card extensionsMenuExtensionButton"></div><span>Show Gallery</span></div></div>
+        <div id="token_counter_wand_container" class="extension_container"><div class="list-group-item flex-container flexGap5 interactable" tabindex="0"><div class="fa-solid fa-1 extensionsMenuExtensionButton"></div><span>Token Counter</span></div></div>
+    </div>
+
+    <script type="module" src="./st-shell.js"></script>
+</body>
+</html>

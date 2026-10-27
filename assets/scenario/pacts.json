@@ -1,0 +1,221 @@
+[
+  {
+    "id": "pact-nato",
+    "type": "alliance",
+    "name": "OTAN",
+    "members": ["USA", "CAN", "GBR", "FRA", "DEU", "ITA", "ESP", "PRT", "NLD", "BEL", "LUX", "DNK", "NOR", "ISL",
+      "TUR", "GRC", "POL", "CZE", "HUN", "SVK", "SVN", "HRV", "ALB", "MNE", "MKD", "BGR", "ROU", "EST", "LVA",
+      "LTU", "FIN", "SWE"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-csto",
+    "type": "alliance",
+    "name": "OTSC (Organização do Tratado de Segurança Coletiva)",
+    "members": ["RUS", "BLR", "KAZ", "KGZ", "TJK"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-union-state",
+    "type": "alliance",
+    "name": "Estado da União Rússia–Belarus",
+    "members": ["RUS", "BLR"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-usa-jpn",
+    "type": "defense",
+    "name": "Tratado de Segurança EUA–Japão",
+    "members": ["USA", "JPN"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-usa-kor",
+    "type": "defense",
+    "name": "Tratado de Defesa Mútua EUA–Coreia do Sul",
+    "members": ["USA", "KOR"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-usa-phl",
+    "type": "defense",
+    "name": "Tratado de Defesa Mútua EUA–Filipinas",
+    "members": ["USA", "PHL"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-anzus",
+    "type": "defense",
+    "name": "ANZUS (Austrália–EUA)",
+    "members": ["AUS", "USA"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-aus-nzl",
+    "type": "defense",
+    "name": "Aliança Austrália–Nova Zelândia",
+    "members": ["AUS", "NZL"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-usa-tha",
+    "type": "defense",
+    "name": "Aliança EUA–Tailândia",
+    "members": ["USA", "THA"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-chn-prk",
+    "type": "defense",
+    "name": "Tratado de Amizade Sino-Norte-Coreano",
+    "members": ["CHN", "PRK"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-rus-prk",
+    "type": "defense",
+    "name": "Tratado de Parceria Estratégica Abrangente Rússia–Coreia do Norte",
+    "members": ["RUS", "PRK"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-sau-pak",
+    "type": "defense",
+    "name": "Acordo Estratégico de Defesa Mútua Arábia Saudita–Paquistão",
+    "members": ["SAU", "PAK"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-tur-aze",
+    "type": "defense",
+    "name": "Declaração de Shusha (Turquia–Azerbaijão)",
+    "members": ["TUR", "AZE"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-fra-grc",
+    "type": "defense",
+    "name": "Parceria Estratégica de Defesa França–Grécia",
+    "members": ["FRA", "GRC"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-aes",
+    "type": "defense",
+    "name": "Aliança dos Estados do Sahel",
+    "members": ["MLI", "BFA", "NER"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-chn-rus",
+    "type": "nonAggression",
+    "name": "Tratado de Boa Vizinhança e Cooperação Amistosa China–Rússia",
+    "members": ["CHN", "RUS"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-irn-rus",
+    "type": "nonAggression",
+    "name": "Tratado de Parceria Estratégica Abrangente Irã–Rússia",
+    "members": ["IRN", "RUS"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-eu-market",
+    "type": "trade",
+    "name": "Mercado Único Europeu",
+    "members": ["DEU", "FRA", "ITA", "ESP", "PRT", "NLD", "BEL", "LUX", "IRL", "AUT", "DNK", "SWE", "FIN", "EST",
+      "LVA", "LTU", "POL", "CZE", "SVK", "SVN", "HRV", "HUN", "ROU", "BGR", "GRC", "CYP"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-mercosul",
+    "type": "trade",
+    "name": "Mercosul",
+    "members": ["BRA", "ARG", "URY", "PRY", "BOL"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-usmca",
+    "type": "trade",
+    "name": "T-MEC (Acordo EUA–México–Canadá)",
+    "members": ["USA", "MEX", "CAN"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-asean",
+    "type": "trade",
+    "name": "Área de Livre Comércio da ASEAN",
+    "members": ["IDN", "MYS", "PHL", "THA", "VNM", "KHM", "LAO", "MMR", "BRN", "TLS"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-rcep",
+    "type": "trade",
+    "name": "RCEP (Parceria Econômica Regional Abrangente)",
+    "members": ["CHN", "JPN", "KOR", "AUS", "NZL", "IDN", "MYS", "PHL", "THA", "VNM", "KHM", "LAO", "MMR", "BRN"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-cptpp",
+    "type": "trade",
+    "name": "CPTPP (Acordo Transpacífico)",
+    "members": ["JPN", "CAN", "AUS", "NZL", "MEX", "CHL", "PER", "VNM", "MYS", "BRN", "GBR"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-eaeu",
+    "type": "trade",
+    "name": "União Econômica Eurasiática",
+    "members": ["RUS", "BLR", "KAZ", "KGZ", "ARM"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-gcc",
+    "type": "trade",
+    "name": "Conselho de Cooperação do Golfo",
+    "members": ["SAU", "ARE", "QAT", "KWT", "OMN"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-can",
+    "type": "trade",
+    "name": "Comunidade Andina",
+    "members": ["BOL", "COL", "ECU", "PER"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  },
+  {
+    "id": "pact-ecowas",
+    "type": "trade",
+    "name": "CEDEAO (Comunidade Econômica dos Estados da África Ocidental)",
+    "members": ["NGA", "GHA", "CIV", "SEN", "BEN", "TGO", "LBR", "SLE", "GMB"],
+    "startedTurn": 0,
+    "expiresTurn": null
+  }
+]

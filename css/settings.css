@@ -1,0 +1,56 @@
+/*
+ * css/settings.css — UI-B: "Grande Estratégia" drawer inside SillyTavern's
+ * Extensions panel. It must look like the built-in drawers, so it inherits
+ * ST's theme (SmartTheme variables, checkbox_label, text_pole, menu_button)
+ * and only adds layout + a brass accent. base.css gives .hoi-root its own
+ * font/colors; they are reset here to ST's.
+ */
+
+.hoi-root.hoi-settings {
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+.hoi-root .hoi-settings__title { display: inline-flex; align-items: center; gap: 8px; }
+.hoi-root .hoi-settings__title i { color: var(--hoi-brass); }
+.hoi-root .hoi-settings__content { padding: 2px 0 8px; }
+.hoi-root .hoi-settings__intro { margin: 2px 0 8px; opacity: 0.85; }
+.hoi-root .hoi-settings__actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+.hoi-root .hoi-settings__actions .menu_button { margin: 0; width: auto; }
+.hoi-root .hoi-settings__section {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--SmartThemeBorderColor, rgba(0, 0, 0, 0.5));
+}
+.hoi-root .hoi-settings__h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-size: 1em;
+    font-weight: 700;
+}
+.hoi-root .hoi-settings__h i { width: 1.1em; text-align: center; color: var(--hoi-brass); }
+.hoi-root .hoi-settings__help {
+    display: block;
+    margin: 1px 0 8px;
+    font-size: 0.85em;
+    line-height: 1.4;
+    opacity: 0.7;
+}
+.hoi-root.hoi-settings .checkbox_label { margin: 4px 0 0; }
+.hoi-root .hoi-settings__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px 10px;
+}
+.hoi-root .hoi-settings__field--wide { grid-column: 1 / -1; }
+.hoi-root .hoi-settings__field { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 0; min-width: 0; }
+.hoi-root .hoi-settings__field > .text_pole { margin: 0; width: 100%; }
+.hoi-root .hoi-settings__label { font-size: 0.9em; opacity: 0.9; }
+.hoi-root .hoi-settings__group { margin-top: 2px; transition: opacity 0.15s; }
+.hoi-root .hoi-settings__group.is-disabled { opacity: 0.5; }
+.hoi-root.hoi-settings .text_pole:disabled { opacity: 0.55; cursor: not-allowed; }
+.hoi-root .hoi-settings__btn i { color: var(--hoi-brass); }
+.hoi-root .hoi-settings__btn--danger i { color: inherit; }

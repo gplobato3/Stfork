@@ -1,151 +1,173 @@
 /**
  * @file src/contract/events.js
- * Event / decision / effect schema for the HOI Grande Estrategia extension.
+ * Effect / Option / GameEvent / ActionDef / TurnReport shapes (JSDoc only).
+ * Node-safe, no runtime behaviour.
  *
- * Part of the SHARED CONTRACT. Defines the shapes the LLM returns each turn
- * (GameEvent -> Option[] -> Effect[]) and the Crisis shape stored in world
- * state. The Effect taxonomy here is EXHAUSTIVE: the engine (Module A) can
- * apply any effect whose `type` is in EFFECT_TYPES. If you add an effect type,
- * add it here, in schemas.js (EVENT_SCHEMA + validateEvent), and in the engine.
+ * EFFECT SHAPES (one per `type`; unknown fields are ignored by the engine).
+ * Target fields accept a nation id or a PLACEHOLDER ('SELF' | 'TARGET' | 'PLAYER').
  *
- * Display fields (title/narrative/label/rationale/description) are pt-BR.
- * Pure data only. Safe under node.
- */
-
-import { RESOURCE_KEYS } from './worldState.js';
-
-/**
- * Exhaustive list of effect `type` values the engine understands.
- * Keep in sync with EFFECT_SCHEMAS below and the engine's applyEffect().
- * @type {ReadonlyArray<EffectType>}
- */
-export const EFFECT_TYPES = Object.freeze([
-    'resource', // adjust one resource of a nation by a signed delta
-    'relation', // adjust the relation score between two nations by a signed delta
-    'tension', // adjust the global WW3 tension meter by a signed delta
-    'crisis', // start or resolve a crisis
-    'flag', // set/clear a story flag on world state
-    'bloc', // move a nation into a different bloc
-    'war', // declare or end war between two nations (relation + tension side effects)
-    'resourceSet', // set a nation resource to an absolute value (rare; prefer 'resource')
-]);
-
-/**
- * Severity scale for crises.
- * @type {ReadonlyArray<CrisisSeverity>}
- */
-export const CRISIS_SEVERITIES = Object.freeze(['low', 'medium', 'high', 'critical']);
-
-/** Allowed crisis actions for a 'crisis' effect. */
-export const CRISIS_ACTIONS = Object.freeze(['start', 'escalate', 'deescalate', 'resolve']);
-
-/** Allowed war actions for a 'war' effect. */
-export const WAR_ACTIONS = Object.freeze(['declare', 'ceasefire', 'peace']);
-
-/** Min / max number of options a GameEvent may present to the player. */
-export const OPTION_COUNT = Object.freeze({ MIN: 2, MAX: 4 });
-
-/** Soft bounds the validator enforces on effect deltas (keeps the LLM sane). */
-export const EFFECT_DELTA_BOUNDS = Object.freeze({
-    resource: { min: -50, max: 50 },
-    relation: { min: -100, max: 100 },
-    tension: { min: -50, max: 50 },
-});
-
-/**
- * @typedef {('resource'|'relation'|'tension'|'crisis'|'flag'|'bloc'|'war'|'resourceSet')} EffectType
- */
-
-/**
- * @typedef {('low'|'medium'|'high'|'critical')} CrisisSeverity
- */
-
-/**
- * @typedef {Object} Crisis
- * @property {string} id            Stable crisis id (slug/uuid).
- * @property {string} title         pt-BR short title.
- * @property {string} description   pt-BR description of the situation.
- * @property {CrisisSeverity} severity Severity bucket.
- * @property {string[]} involvedNationIds ISO alpha-3 ids of nations involved.
- * @property {number} turnStarted   Turn index when the crisis began.
- * @property {Object} [data]        Optional free-form crisis payload.
- */
-
-/**
- * A single deterministic delta the engine applies. Exactly one shape per
- * `type`. All numeric deltas are signed unless the type says otherwise.
+ *   resource  { type, target, resource: ResourceKey, delta }            |delta| <= EFFECT_LIMITS.resource
+ *   relation  { type, target, targetB, delta }                          |delta| <= EFFECT_LIMITS.relation
+ *   tension   { type, delta }                                           |delta| <= EFFECT_LIMITS.tension
+ *   pc        { type, target, delta }                                   political capital
+ *   modifier  { type, target, label, perTurn: Partial<Resources>, turns }
+ *   crisis    { type, action: 'start', title, description, severity, involved: string[], category? }
+ *             { type, action: 'escalate'|'deescalate'|'resolve', crisisId }
+ *   pact      { type, action: 'create', pactType, target, targetB, label? }
+ *             { type, action: 'break',  pactType, target, targetB }
+ *   war       { type, action: 'declare', target (attacker), targetB (defender), label? }
+ *             { type, action: 'ceasefire'|'peace', target, targetB, terms?: PEACE_TERMS (peace only) }
+ *   front     { type, target (attacker), targetB (defender), delta }   occupation progress change
+ *   bloc      { type, target, bloc }
+ *   flag      { type, key, value }
+ *   news      { type, text }                                            pt-BR headline
  *
+ * Every effect may carry `note` (pt-BR) which the engine may log.
+ */
+
+/**
  * @typedef {Object} Effect
- * @property {EffectType} type           Discriminator.
- * @property {string} [target]           Primary target. For 'resource'/'resourceSet'/'bloc': a nationId.
- *                                       For 'flag': the flag name. For 'relation'/'war': nationId A.
- * @property {string} [targetB]          Secondary nationId for 'relation'/'war'.
- * @property {ResourceKey} [resource]    Which resource, for 'resource'/'resourceSet'.
- * @property {number} [delta]            Signed delta for 'resource'/'relation'/'tension'.
- * @property {number} [value]            Absolute value for 'resourceSet', or flag value for 'flag'.
- * @property {CrisisAction} [action]     For 'crisis' (start/escalate/deescalate/resolve) and 'war'.
- * @property {string} [bloc]             For 'bloc': the destination bloc string.
- * @property {Partial<Crisis>} [crisis]  For 'crisis' action 'start': the crisis payload.
- * @property {string} [crisisId]         For 'crisis' escalate/deescalate/resolve: which crisis.
- * @property {string} [note]             Optional pt-BR note the engine may log.
+ * @property {string} type
+ * @property {string} [target]
+ * @property {string} [targetB]
+ * @property {string} [resource]
+ * @property {number} [delta]
+ * @property {string} [action]
+ * @property {string} [pactType]
+ * @property {string} [terms]
+ * @property {string} [bloc]
+ * @property {string} [crisisId]
+ * @property {string} [title]
+ * @property {string} [description]
+ * @property {string} [severity]
+ * @property {string[]} [involved]
+ * @property {string} [category]
+ * @property {string} [label]
+ * @property {Object<string, number>} [perTurn]
+ * @property {number} [turns]
+ * @property {string} [key]
+ * @property {*} [value]
+ * @property {string} [text]
+ * @property {string} [note]
  */
 
 /**
- * @typedef {('start'|'escalate'|'deescalate'|'resolve')} CrisisAction
- */
-
-/**
- * A player-selectable option attached to a GameEvent.
  * @typedef {Object} Option
- * @property {string} id         Stable option id (e.g. 'opt_a').
- * @property {string} label      pt-BR short action label shown on the button.
- * @property {string} rationale  pt-BR one-line explanation of consequences/tone.
- * @property {Effect[]} effects  Deterministic effects applied if chosen (may be empty).
+ * @property {string} label          pt-BR button text (<= ~60 chars).
+ * @property {string} rationale      pt-BR one-line consequence hint.
+ * @property {Effect[]} effects
+ * @property {string} [aiHint]       Optional internal note (never shown).
  */
 
 /**
- * The per-turn object the LLM returns (validated by validateEvent/EVENT_SCHEMA).
+ * A decision presented to the player. Produced by the LLM (source 'llm'),
+ * by the engine (source 'engine': calls to arms, peace offers, capitulation
+ * terms) or locally when the LLM fails (source 'fallback').
  * @typedef {Object} GameEvent
- * @property {string} id         Stable event id.
- * @property {string} title      pt-BR headline.
- * @property {string} narrative  pt-BR flavor text / situation description (the "story").
- * @property {string} [context]  Optional pt-BR extra context the UI may show.
- * @property {Option[]} options  2..4 options for the player.
- * @property {number} [tensionDelta] Optional baseline global-tension change applied
- *                                   regardless of which option is chosen. Signed.
+ * @property {string} id
+ * @property {'llm'|'engine'|'fallback'} source
+ * @property {string} category       One of EVENT_CATEGORIES.
+ * @property {string} title          pt-BR
+ * @property {string} narrative      pt-BR, 60-180 words.
+ * @property {string[]} [headlines]  pt-BR world news lines (0-3), shown under the narrative.
+ * @property {string[]} [involved]   Nation ids (map highlight).
+ * @property {Option[]} options      OPTION_COUNT.MIN..MAX
+ * @property {number} turn           Turn the event was generated for.
+ * @property {number} [defaultOption] source 'engine' only: applied when the decision is left
+ *                                   unanswered for 6 turns.
+ *
+ * Peace terms in a `war` effect: `target` is the side imposing the terms, `targetB` accepts them.
  */
 
 /**
- * Create a Crisis object with sane defaults.
- * @param {Partial<Crisis>} [p]
- * @returns {Crisis}
+ * Success-chance formula inputs. chance = clamp(base + sum(stat * weight) + relationWeight * relation, 5, 95)
+ * where stats are the ACTOR's resources (0..100) and relation is actor<->target (-100..100).
+ * @typedef {Object} ChanceSpec
+ * @property {number} base                  0..100
+ * @property {Partial<Record<string, number>>} [stats]   resourceKey -> weight (e.g. { influence: 0.3 })
+ * @property {number} [relationWeight]      e.g. 0.2
+ * @property {Partial<Record<string, number>>} [targetStats] TARGET resourceKey -> weight (usually negative)
  */
-export function createCrisis(p = {}) {
-    return {
-        id: p.id || `crisis-${Date.now().toString(36)}`,
-        title: p.title || '',
-        description: p.description || '',
-        severity: CRISIS_SEVERITIES.includes(/** @type {any} */ (p.severity)) ? p.severity : 'medium',
-        involvedNationIds: Array.isArray(p.involvedNationIds) ? p.involvedNationIds.slice() : [],
-        turnStarted: typeof p.turnStarted === 'number' ? p.turnStarted : 0,
-        ...(p.data ? { data: p.data } : {}),
-    };
-}
 
 /**
- * Is `t` a recognized effect type?
- * @param {any} t
- * @returns {boolean}
+ * Declarative requirement checked by engine.getAvailableActions(). All present
+ * keys must hold. Reason strings are produced by the engine in pt-BR.
+ * @typedef {Object} Requirement
+ * @property {number} [minRelation]       actor<->target relation >= n
+ * @property {number} [maxRelation]       actor<->target relation <= n
+ * @property {boolean} [atWarWithTarget]
+ * @property {boolean} [notAtWarWithTarget]
+ * @property {boolean} [atWar]            actor is in any war
+ * @property {boolean} [targetNeighborOrMajor]  target is a map neighbor, or actor is a major power (power projection)
+ * @property {boolean} [alliedWithTarget]
+ * @property {boolean} [notAlliedWithTarget]
+ * @property {boolean} [nuclear]          actor.nuclear > 0
+ * @property {boolean} [notNuclear]
+ * @property {Partial<Record<string, number>>} [minResources]  actor resource >= n
+ * @property {number} [maxTension]
+ * @property {number} [minTension]
+ * @property {boolean} [targetActive]     target.status === 'active' (default true for targeted actions)
  */
-export function isEffectType(t) {
-    return EFFECT_TYPES.includes(t);
-}
 
 /**
- * Is `r` one of the 7 resource keys?
- * @param {any} r
- * @returns {boolean}
+ * One entry of the action catalog (src/engine/catalog.js). Effects use
+ * placeholders SELF / TARGET.
+ * @typedef {Object} ActionDef
+ * @property {string} id                 snake_case, stable ('dip_improve_relations').
+ * @property {string} category           One of ACTION_CATEGORIES.
+ * @property {string} name               pt-BR
+ * @property {string} description        pt-BR one sentence.
+ * @property {string} icon               Font Awesome class ('fa-solid fa-handshake').
+ * @property {'none'|'nation'} target    'nation' = needs a target nation (not self).
+ * @property {{pc:number, resources?: Partial<Record<string, number>>}} cost  resources are POSITIVE amounts spent.
+ * @property {number} cooldown           Turns before the same actor can repeat it.
+ * @property {Requirement} [requires]
+ * @property {ChanceSpec|null} chance    null = always succeeds.
+ * @property {Effect[]} onSuccess
+ * @property {Effect[]} [onFailure]
+ * @property {string[]} [keywords]       pt-BR synonyms used by the orders arbiter ("mobilizar", "tropas").
+ * @property {boolean} [playerOnly]      AI never uses it.
+ * @property {boolean} [confirm]         UI asks for confirmation (war, nukes...).
  */
-export function isResourceKey(r) {
-    return RESOURCE_KEYS.includes(r);
-}
+
+/**
+ * Availability of one action for one actor/target pair (engine.getAvailableActions).
+ * @typedef {Object} ActionAvailability
+ * @property {ActionDef} def
+ * @property {boolean} available
+ * @property {string[]} reasons          pt-BR reasons when unavailable (empty when available).
+ * @property {number} chance             0..100 (100 when def.chance is null).
+ * @property {number} cooldownLeft       Turns left (0 = ready).
+ */
+
+/**
+ * @typedef {Object} ActionResult
+ * @property {boolean} ok                false = rejected (unavailable / unknown); state unchanged.
+ * @property {boolean} success           Dice outcome (meaningless when ok === false).
+ * @property {string} actionId
+ * @property {?string} targetId
+ * @property {string} summary            pt-BR one-liner for toasts / sitrep.
+ * @property {string[]} details          pt-BR effect lines ("Economia −3", "Relação com China +10").
+ * @property {string[]} [reasons]        pt-BR rejection reasons when ok === false.
+ */
+
+/**
+ * Deterministic outcome of engine.endTurn(). Everything pt-BR.
+ * @typedef {Object} TurnReport
+ * @property {number} turn                       The NEW turn number.
+ * @property {{year:number, month:number}} date  The NEW date.
+ * @property {number} pcGained
+ * @property {Partial<Record<string, number>>} playerDeltas  Player resource changes this upkeep.
+ * @property {number} tensionBefore
+ * @property {number} tensionAfter
+ * @property {Array<{actorId:string, actionId:string, targetId:?string, success:boolean, summary:string}>} aiActions
+ * @property {Array<{warId:string, summary:string}>} warUpdates
+ * @property {string[]} capitulations            Nation ids that capitulated this turn.
+ * @property {string[]} newCrises                Crisis ids.
+ * @property {string[]} resolvedCrises           Crisis titles.
+ * @property {string[]} headlines                Deterministic pt-BR news lines (also pushed into state.news).
+ * @property {GameEvent[]} engineEvents          Decisions the engine needs from the player (also pushed into state.eventQueue).
+ * @property {?{kind:'victory'|'defeat', reason:string}} outcome
+ */
+
+export {};
